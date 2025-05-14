@@ -1,6 +1,7 @@
 objectif pour le 16-05-2025:
--models (user _admin/ challenge / scoreboard / review / )
--brouillon
+-project 2 v
+-models (user _admin/ challenge / scoreboard / review /submission )
+-brouillon v
 -run
 -config
 -beta challenge
