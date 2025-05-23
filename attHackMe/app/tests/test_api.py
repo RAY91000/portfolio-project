@@ -64,17 +64,18 @@ def test_admin_update_user():
 
     # Récupération du token depuis la page HTML
     match = re.search(r'"access_token"\s*:\s*"([^"]+)"', res.text)
-    if match:
-        token = match.group(1)
-    else:
-        raise Exception("JWT token non trouvé dans la réponse")
+    token = match.group(1) if match else None
 
+    match_id = re.search(r'"user_id"\s*:\s*"([^"]+)"', res.text)
+    user_id = match_id.group(1) if match_id else None
+    if not token or not user_id:
+        raise Exception("Token ou user_id manquant")
     headers = {
         "Authorization": f"Bearer {token}"
     }
     payload = {
         "username": "updated_admin"
     }
-    user_id = "23e6b15d-6f33-4b2d-a29a-556991cb9b59"  # ID de seed.py
+    
     res = requests.put(f"{BASE_URL}/users/{user_id}", json=payload, headers=headers)
     assert res.status_code in [200, 204], f"Admin update failed: {res.status_code}, {res.text}"
