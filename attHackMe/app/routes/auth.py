@@ -9,6 +9,7 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
+    print("➡️ register(): request.form =", request.form)
     data = request.form
     username = data.get('username')
     email = data.get('email')
@@ -19,6 +20,9 @@ def register():
 
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "Email already exists"}), 400
+    
+    if User.query.filter_by(username=username).first():
+        return jsonify({"error": "Username already exists"}), 400
 
     user = User(username=username, email=email)
     user.set_password(password)
