@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, current_user
 from flask_jwt_extended import create_access_token
+from sqlalchemy.exc import IntegrityError
 from datetime import timedelta
 from app.extensions import db
 from app.models.user import User
@@ -23,13 +24,16 @@ def register():
     
     if User.query.filter_by(username=username).first():
         return jsonify({"error": "Username already exists"}), 400
-
-    user = User(username=username, email=email)
-    user.set_password(password)
-
-    db.session.add(user)
-    db.session.commit()
-    return jsonify({"message": "User registered"}), 201
+    
+    try:
+        user = User(username=username, email=email)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({"message": "Inscription réussie."}), 201
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "Erreur lors de l'inscription."}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
