@@ -142,4 +142,53 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(error);
         });
     }
+
+    // 5. Handle Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            window.location.href = "/login";
+        });
+    }
+    // 6. Display Username
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const userBadge = document.getElementById("userBadge");
+
+    if (usernameDisplay && userBadge) {
+        const username = localStorage.getItem("username");
+        if (username) {
+            usernameDisplay.textContent = ` ${username}`;
+            userBadge.classList.remove("hidden");
+        } else {
+            userBadge.classList.add("hidden");
+        }
+    }
+    // 7. Handle Docker Image Click
+    const dockerImageLink = document.getElementById("dockerImageLink");
+    if (dockerImageLink) {
+        dockerImageLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            const dockerImage = dockerImageLink.getAttribute("data-docker-image");
+            if (dockerImage) {
+                window.open(`https://hub.docker.com/r/${dockerImage}`, "_blank");
+            } else {
+                alert("Docker image not available.");
+            }
+        });
+    }
+    // 8. Handle Docker Image Display
+    const dockerImageDisplay = document.getElementById("dockerImageDisplay");
+    if (dockerImageDisplay) {
+        const dockerImage = dockerImageDisplay.getAttribute("data-docker-image");
+        if (dockerImage) {
+            dockerImageDisplay.innerHTML = `
+                <p class="text-gray-300">Docker Image: <a href="#" id="dockerImageLink" data-docker-image="${dockerImage}" class="text-blue-500 hover:underline">${dockerImage}</a></p>
+            `;
+        }
+        else {
+            dockerImageDisplay.innerHTML = `<p class="text-gray-300">Docker Image: Not available</p>`;
+        }
+    }
 });
