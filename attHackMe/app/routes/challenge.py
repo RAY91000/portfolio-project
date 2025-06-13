@@ -43,7 +43,7 @@ def start_challenge(id):
     # Check if the user has already started this challenge
     existing_submission = Submission.query.filter_by(user_id=user_id, challenge_id=str(id)).first()
     if existing_submission:
-        return jsonify({"message": "Challenge already started"}), 200
+        return jsonify({"message": "Challenge already started"}), 201
     
     # Create a new submission
     submission = Submission(
