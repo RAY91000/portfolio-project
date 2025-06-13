@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from app.extensions import db, login_manager, bcrypt, jwt, csrf
 from app.routes.auth import auth_bp
 from app.routes.user import user_bp
@@ -11,6 +12,7 @@ def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config_dict[config_name])
     app.config['WTF_CSRF_ENABLED'] = False  # désactive CSRF pour les tests
+    CORS(app)
 
     db.init_app(app)
     login_manager.init_app(app)

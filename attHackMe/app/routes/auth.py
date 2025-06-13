@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from flask_login import login_user, logout_user, current_user
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import IntegrityError
@@ -16,6 +16,7 @@ def register():
     email = data.get('email')
     password = data.get('password')
 
+
     if not all([username, email, password]):
         return jsonify({"error": "Missing fields"}), 400
 
@@ -30,10 +31,14 @@ def register():
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        return jsonify({"message": "Inscription réussie."}), 201
+        
+        response = make_response(jsonify({"message": "Registered with success."}), 201)
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+    
     except IntegrityError:
         db.session.rollback()
-        return jsonify({"error": "Erreur lors de l'inscription."}), 500
+        return jsonify({"error": "Error during register."}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -44,13 +49,19 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user and user.verify_password(password):
         login_user(user)
-        access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
-        return jsonify({
+        access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=24))
+        
+        response = make_response(jsonify({
             "access_token": access_token,
             "user_id": user.id,
+            "username": user.username, # So we can see the username in the frontend like in a game
             "message": "Logged in"
-        }), 200
-    return jsonify({"error": "Invalid credentials"}), 401
+        }), 200)
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+    else:
+    
+        return jsonify({"error": "Invalid credentials"}), 401
 
 @auth_bp.route('/logout', methods=['POST'])
 def logout():

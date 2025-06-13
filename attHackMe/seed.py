@@ -30,14 +30,38 @@ with app.app_context():
     db.session.add(user)
 
     # Challenge
-    challenge = Challenge(
+    challenge1 = Challenge(
+        docker_image='att/recon101:latest',
         title='Recon 101',
         description='Find open ports and basic services.',
+        instructions="""
+        You are given a target IP. Use tools like 'namp' or 'rustscan' to identify services.
+        then, try connecting to those services manually and gather information.
+        Hint: There might be a default webpage hidden somewhere.""",
         difficulty='Easy',
         category='Reconnaissance',
         flag='1337'
     )
-    db.session.add(challenge)
+
+    challenge2 = Challenge(
+        docker_image='att/crypto101:latest',
+        title='Crypto 101',
+        description='Decrypt a simple message using a provided key.',
+        difficulty='Medium',
+        category='Cryptography',
+        flag='crypto123'
+    )
+    challenge3 = Challenge(
+        docker_image='att/web101:latest',
+        title='Web 101',
+        description='Find the hidden flag in a web application.',
+        difficulty='Hard',
+        category='Web',
+        flag='webflag123'
+    )
+    challenges = [challenge1, challenge2, challenge3]
+    for challenge in challenges:
+        db.session.add_all(challenges)
     db.session.commit()
 
     # Review (par user sur le challenge)

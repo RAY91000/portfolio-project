@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
     <title>AttHackMe - Accueil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Bienvenue sur AttHackMe</h1>
-    <a href="/register">Créer un compte</a> |
-    <a href="/login">Se connecter</a> |
-    <a href="/challenges">Voir les challenges</a>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen text-center">
+    <h1 class="text-4xl font-bold text-indigo-600 mb-6">Bienvenue sur <span class="text-black">AttHackMe</span></h1>
+    <div class="space-x-4">
+        <a href="/register" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Créer un compte</a>
+        <a href="/login" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Se connecter</a>
+        <a href="/challenges" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">Voir les challenges</a>
+    </div>
 </body>
 </html>
+<!-- This is the home page of the AttHackMe application. It provides links to register, login, and view challenges. -->
+<!-- The page uses Tailwind CSS for styling and is designed to be simple and user-friendly. -->
