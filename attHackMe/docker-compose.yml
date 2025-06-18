@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  guacd:
+    image: guacamole/guacd
+    container_name: guacd
+    restart: always
+
+  guacamole-db:
+    image: mysql:5.7
+    container_name: guacamole-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: guacamole_db
+      MYSQL_USER: guacamole_user
+      MYSQL_PASSWORD: guacpass
+    volumes:
+      - ./guacamole/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./guacamole/02_admin.sql:/docker-entrypoint-initdb.d/02_admin.sql
+
+  guacamole:
+    image: guacamole/guacamole
+    container_name: guacamole
+    restart: always
+    depends_on:
+      - guacd
+      - guacamole-db
+    environment:
+      GUACD_HOSTNAME: guacd
+      MYSQL_HOSTNAME: guacamole-db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: guacamole_db
+      MYSQL_USER: guacamole_user
+      MYSQL_PASSWORD: guacpass
+    ports:
+      - "8080:8080"
+
+  kali:
+    build:
+      context: .
+      dockerfile: Dockerfile.kali
+    container_name: kali
+    privileged: true
+    restart: always
+    ports:
+      - "2222:22"
+      - "5901:5901"
+    tty: true
