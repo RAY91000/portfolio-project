@@ -1,18 +1,97 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>AttHackMe - Accueil</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <title>AttHackMe - Home</title>
+  <link rel="stylesheet" href="static/styles.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <audio id="click-sound" src="static/sounds/click-challenge.mp3" preload="auto"></audio>
+
+
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen text-center">
-    <h1 class="text-4xl font-bold text-indigo-600 mb-6">Bienvenue sur <span class="text-black">AttHackMe</span></h1>
-    <div class="space-x-4">
-        <a href="/register" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Créer un compte</a>
-        <a href="/login" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Se connecter</a>
-        <a href="/challenges" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">Voir les challenges</a>
-    </div>
+<body class="bg-black m-0 overflow-hidden">
+
+  <div id="scene" class="relative w-screen h-screen overflow-hidden">
+    <!-- Image de fond -->
+    <img src="static/images/background.png" alt="Home Background" class="absolute top-0 left-0 w-full h-full object-cover z-0" />
+
+    <!-- Bouton Soldat (déplaçable) --> 
+    <a href="profile.html"
+       class="absolute z-20 glow-soldier"
+       style="top: -1px; left: -7px; width: 548px; height: 721px;">
+      <img src="static/images/soldier.png" alt="Soldier" class="w-full h-full object-contain pointer-events-auto" />
+    </a>
+    
+
+    <!-- Bouton Board (déplaçable) -->
+    <a href="/challenges"
+      id="board-button"
+       class="absolute z-10 glow-board"
+       style="top: 31px; left: 836px; width: 393.797px; height: 398.016px;">
+      <img src="static/images/board.png" alt="Board" class="w-full h-full object-contain pointer-events-auto" />
+    </a>
+  </div>
+
+  <!-- BUILDER DRAG+RESIZE   put draggable instead of absolute
+  <script>
+    document.querySelectorAll('.draggable').forEach(el => {
+      el.style.position = 'absolute';
+      el.style.cursor = 'move';
+
+      let isDragging = false, isResizing = false;
+      let startX, startY, startWidth, startHeight, startTop, startLeft;
+
+      const resizer = document.createElement('div');
+      resizer.style.width = '12px';
+      resizer.style.height = '12px';
+      resizer.style.background = 'cyan';
+      resizer.style.position = 'absolute';
+      resizer.style.right = '0';
+      resizer.style.bottom = '0';
+      resizer.style.cursor = 'nwse-resize';
+      resizer.style.zIndex = '20';
+      el.appendChild(resizer);
+
+      el.addEventListener('mousedown', e => {
+        if (e.target === resizer) {
+          isResizing = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          startWidth = parseFloat(getComputedStyle(el).width);
+          startHeight = parseFloat(getComputedStyle(el).height);
+          e.preventDefault();
+        } else {
+          isDragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          startTop = parseFloat(el.style.top);
+          startLeft = parseFloat(el.style.left);
+          e.preventDefault();
+        }
+      });
+
+      window.addEventListener('mousemove', e => {
+        if (isDragging) {
+          el.style.top = (startTop + (e.clientY - startY)) + 'px';
+          el.style.left = (startLeft + (e.clientX - startX)) + 'px';
+        }
+        if (isResizing) {
+          el.style.width = (startWidth + e.clientX - startX) + 'px';
+          el.style.height = (startHeight + e.clientY - startY) + 'px';
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDragging || isResizing) {
+          console.log(`top: ${el.style.top}; left: ${el.style.left}; width: ${el.style.width}; height: ${el.style.height};`);
+        }
+        isDragging = false;
+        isResizing = false;
+      });
+    });
+  </script> -->
+  <script src="static/app.js"></script>
 </body>
 </html>
-<!-- This is the home page of the AttHackMe application. It provides links to register, login, and view challenges. -->
-<!-- The page uses Tailwind CSS for styling and is designed to be simple and user-friendly. -->

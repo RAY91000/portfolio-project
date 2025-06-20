@@ -1,0 +1,76 @@
+/* Hide scrollbar on all scrollable elements */
+#scrollWrapper {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* Internet Explorer 10+ */
+}
+
+#scrollWrapper::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari and Opera */
+}
+
+
+/* Green glow for the soldier */
+.glow-soldier img:hover {
+  filter: drop-shadow(0 0 10px #ff1fc7);
+  transition: 0.3s ease;
+}
+
+/* Blue glow for the board */
+.glow-board img:hover {
+  filter: drop-shadow(0 0 10px #4dffac);
+  transition: 0.3s ease;
+}
+
+/* Zoom effect for the background */
+.zooming {
+  animation: zoom-in 0.8s ease-in-out forwards;
+}
+
+@keyframes zoom-in {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+.zoom-out {
+  animation: zoomToBoard 1s ease-in-out forwards;
+}
+
+@keyframes zoomToBoard {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+.scroll-list__wrp {
+  width: 10%; height: 400px;
+  overflow: auto;
+  padding: 50px;
+  box-shadow: none;
+  background-color: transparent;
+  border-radius: 8px;
+  backdrop-filter: none;
+
+}
+
+.scroll-list__wrp::-webkit-scrollbar {
+  display: none; /* Hide scrollbar */
+}
+
+.mask-fade {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}

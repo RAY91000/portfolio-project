@@ -59,7 +59,55 @@ with app.app_context():
         category='Web',
         flag='webflag123'
     )
-    challenges = [challenge1, challenge2, challenge3]
+    challenge4 = Challenge(
+        docker_image='att/web101:latest',
+        title='Web 101',
+        description='Find the hidden flag in a web application.',
+        difficulty='Hard',
+        category='Web',
+        flag='webflag123'
+    )
+    challenge5 = Challenge(
+        docker_image='att/web101:latest',
+        title='Web 101',
+        description='Find the hidden flag in a web application.',
+        difficulty='Hard',
+        category='Web',
+        flag='webflag123'
+    )
+    challenge9 = Challenge(
+        docker_image='att/web101:latest',
+        title='Web 101',
+        description='Find the hidden flag in a web application.',
+        difficulty='Hard',
+        category='Web',
+        flag='webflag123'
+    )
+    challenge6 = Challenge(
+        docker_image='att/web101:latest',
+        title='Web 101',
+        description='Find the hidden flag in a web application.',
+        difficulty='Hard',
+        category='Web',
+        flag='webflag123'
+    )
+    challenge7 = Challenge(
+        docker_image='att/web101:latest',
+        title='Web 101',
+        description='Find the hidden flag in a web application.',
+        difficulty='Hard',
+        category='Web',
+        flag='webflag123'
+    )
+    challenge8 = Challenge(
+        docker_image='att/web101:latest',
+        title='Web 101',
+        description='Find the hidden flag in a web application.',
+        difficulty='Hard',
+        category='Web',
+        flag='webflag123'
+    )
+    challenges = [challenge1, challenge2, challenge3, challenge4, challenge5, challenge6, challenge7, challenge8, challenge9]
     for challenge in challenges:
         db.session.add_all(challenges)
     db.session.commit()
