@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.user import User
 from app.extensions import db
 from app.decorators import admin_required
+from functools import wraps
 
 user_bp = Blueprint('users', __name__)
 
@@ -36,3 +37,17 @@ def update_user(user_id):
 
     db.session.commit()
     return jsonify({"message": "User updated"}), 200
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        identity = get_jwt_identity()
+        if not identity:
+            return jsonify({"error": "Missing or invalid token"}), 401
+
+        user = User.query.get(identity)
+        if not user or not user.is_admin:
+            return jsonify({"error": "Admin access required"}), 403
+
+        return f(*args, **kwargs)
+    return decorated_function

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Profil - AttHackMe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background: linear-gradient(145deg, #0f0f1b, #1b1f3a);
+    }
+  </style>
+</head>
+<body class="text-white min-h-screen px-6 py-8">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-4xl font-bold text-purple-400">🎮 Mon Profil</h1>
+    <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm">🔓 Déconnexion</button>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="bg-[#1e1e2f] shadow-xl rounded-xl p-6 max-w-4xl mx-auto border border-purple-700">
+    
+    <!-- Banner + Avatar -->
+    <div class="relative h-32 bg-gradient-to-r from-purple-900 to-indigo-900 rounded-t-lg">
+      <img id="avatar" src="/static/images/default-avatar.png"
+           class="w-24 h-24 rounded-full border-4 border-white absolute -bottom-12 left-6 shadow-lg object-cover" alt="Avatar">
+    </div>
+
+    <div class="mt-16 px-6">
+      <h2 class="text-2xl font-bold text-green-400" id="username">Nom d'utilisateur</h2>
+      <p class="text-sm text-gray-400">🧪 Niveau : <span id="level">1</span></p>
+      <p class="text-sm text-gray-400">🏆 Rang : <span id="rank">#42</span></p>
+      <p class="text-sm text-gray-400">🎯 Points : <span id="points">0</span></p>
+
+      <div class="mt-4">
+        <label class="text-sm text-gray-300 flex items-center gap-2">
+          📧 Email : <span id="email">user@example.com</span>
+          <input type="checkbox" id="publicEmail" class="ml-2">
+          <span class="text-xs">Visible par les autres</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Challenge Progress -->
+    <div class="mt-8 px-6">
+      <h3 class="text-xl font-semibold text-purple-300 mb-3">🚀 Progression des Challenges</h3>
+      <ul id="challengeProgress" class="space-y-2">
+        <!-- JS will fill this -->
+      </ul>
+    </div>
+
+    <div class="mt-6 text-center">
+      <a href="/" class="text-indigo-400 hover:underline">← Retour à l'accueil</a>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

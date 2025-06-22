@@ -26,6 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const challengeList = document.getElementById("challengeList");
   const challengeDetails = document.getElementById("challengeDetails");
   const scrollWrapper = document.getElementById("scrollWrapper");
+  const avatar = document.getElementById("avatar");
+  const username = document.getElementById("username");
+  const email = document.getElementById("email");
+  const level = document.getElementById("level");
+  const rank = document.getElementById("rank");
+  const points = document.getElementById("points");
+  const publicEmailCheckbox = document.getElementById("publicEmail");
+  const challengeProgress = document.getElementById("challengeProgress");
 
   // ✅ Register
   if (registerForm) {
@@ -150,6 +158,47 @@ document.addEventListener("DOMContentLoaded", () => {
         challengeDetails.innerHTML = `<p class="text-red-500">Erreur de chargement du challenge.</p>`;
         console.error(error);
       });
+  }
+
+  // ✅ Profile page logic
+  if (username && email && level && rank && points && challengeProgress) {
+    const token = localStorage.getItem("token");
+    fetch("http://127.0.0.1:5000/profile/view", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        username.textContent = data.username;
+        email.textContent = data.email || "Hidden";
+        level.textContent = data.level || 1;
+        rank.textContent = "N/A";
+        points.textContent = "N/A";
+        if (avatar && data.avatar_url) {
+          avatar.src = data.avatar_url;
+        }
+        if (publicEmailCheckbox) {
+          publicEmailCheckbox.checked = data.is_email_public;
+          publicEmailCheckbox.addEventListener("change", () => {
+            fetch("http://127.0.0.1:5000/profile/email_visibility", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ is_public: publicEmailCheckbox.checked })
+            });
+          });
+        }
+        data.progress.forEach(item => {
+          const li = document.createElement("li");
+          li.className = "text-sm text-gray-300";
+          li.textContent = `${item.title} - ${item.status}`;
+          challengeProgress.appendChild(li);
+        });
+      })
+      .catch(err => console.error("Failed to load profile:", err));
   }
 
   // ✅ Logout button

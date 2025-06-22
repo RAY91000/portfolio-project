@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+import random
 from app import create_app
 from app.extensions import db
 from app.models.user import User
 from app.models.challenge import Challenge
 from app.models.review import Review
+from app.models.progress import Progress
 
 app = create_app()
 
@@ -20,106 +22,62 @@ with app.app_context():
     admin.set_password("admin1234")
     db.session.add(admin)
 
-    # Utilisateur normal
-    user = User(
+    # Utilisateur de test principal
+    main_user = User(
         username="user",
-        email="user@att.com",
-        is_admin=False
+        email="user@att.com"
     )
-    user.set_password("user1234")
-    db.session.add(user)
+    main_user.set_password("user1234")
+    db.session.add(main_user)
 
-    # Challenge
-    challenge1 = Challenge(
-        docker_image='att/recon101:latest',
-        title='Recon 101',
-        description='Find open ports and basic services.',
-        instructions="""
-        You are given a target IP. Use tools like 'namp' or 'rustscan' to identify services.
-        then, try connecting to those services manually and gather information.
-        Hint: There might be a default webpage hidden somewhere.""",
-        difficulty='Easy',
-        category='Reconnaissance',
-        flag='1337'
-    )
+    # Générer 9 utilisateurs fictifs
+    users = []
+    for i in range(1, 10):
+        u = User(
+            username=f"user{i}",
+            email=f"user{i}@att.com"
+        )
+        u.set_password(f"test{i}123")
+        users.append(u)
+        db.session.add(u)
 
-    challenge2 = Challenge(
-        docker_image='att/crypto101:latest',
-        title='Crypto 101',
-        description='Decrypt a simple message using a provided key.',
-        difficulty='Medium',
-        category='Cryptography',
-        flag='crypto123'
-    )
-    challenge3 = Challenge(
-        docker_image='att/web101:latest',
-        title='Web 101',
-        description='Find the hidden flag in a web application.',
-        difficulty='Hard',
-        category='Web',
-        flag='webflag123'
-    )
-    challenge4 = Challenge(
-        docker_image='att/web101:latest',
-        title='Web 101',
-        description='Find the hidden flag in a web application.',
-        difficulty='Hard',
-        category='Web',
-        flag='webflag123'
-    )
-    challenge5 = Challenge(
-        docker_image='att/web101:latest',
-        title='Web 101',
-        description='Find the hidden flag in a web application.',
-        difficulty='Hard',
-        category='Web',
-        flag='webflag123'
-    )
-    challenge9 = Challenge(
-        docker_image='att/web101:latest',
-        title='Web 101',
-        description='Find the hidden flag in a web application.',
-        difficulty='Hard',
-        category='Web',
-        flag='webflag123'
-    )
-    challenge6 = Challenge(
-        docker_image='att/web101:latest',
-        title='Web 101',
-        description='Find the hidden flag in a web application.',
-        difficulty='Hard',
-        category='Web',
-        flag='webflag123'
-    )
-    challenge7 = Challenge(
-        docker_image='att/web101:latest',
-        title='Web 101',
-        description='Find the hidden flag in a web application.',
-        difficulty='Hard',
-        category='Web',
-        flag='webflag123'
-    )
-    challenge8 = Challenge(
-        docker_image='att/web101:latest',
-        title='Web 101',
-        description='Find the hidden flag in a web application.',
-        difficulty='Hard',
-        category='Web',
-        flag='webflag123'
-    )
-    challenges = [challenge1, challenge2, challenge3, challenge4, challenge5, challenge6, challenge7, challenge8, challenge9]
-    for challenge in challenges:
-        db.session.add_all(challenges)
+    # Créer des challenges
+    challenges = []
+    for i in range(1, 10):
+        c = Challenge(
+            docker_image=f"att/chal{i}:latest",
+            title=f"Challenge {i}",
+            description=f"Description for challenge {i}.",
+            instructions=f"Instruction set for challenge {i}.",
+            difficulty=random.choice(['Easy', 'Medium', 'Hard']),
+            category=random.choice(['Recon', 'Web', 'Crypto']),
+            flag=f"flag{i}"
+        )
+        challenges.append(c)
+        db.session.add(c)
+
     db.session.commit()
 
-    # Review (par user sur le challenge)
+    # Ajouter progression + points fictifs
+    for u in users:
+        completed = random.sample(challenges, k=random.randint(1, len(challenges)))
+        for ch in completed:
+            prog = Progress(user_id=u.id, challenge_id=ch.id, status="completed", points=random.randint(10, 100))
+            db.session.add(prog)
+
+    # Ajouter pour le main user
+    for ch in challenges[:3]:
+        prog = Progress(user_id=main_user.id, challenge_id=ch.id, status="completed", points=30)
+        db.session.add(prog)
+
+    # Une review d’exemple
     review = Review(
         text="Very instructive challenge!",
         rating=5,
-        challenge_id=challenge.id,
-        user_id=user.id
+        challenge_id=challenges[0].id,
+        user_id=main_user.id
     )
     db.session.add(review)
 
     db.session.commit()
-    print("✔ Base de données initialisée avec admin, user, challenge et review.")
+    print("✔ Base de données initialisée avec utilisateurs, challenges, progressions et review.")
