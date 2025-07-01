@@ -163,18 +163,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Profile page logic
   if (username && email && level && rank && points && challengeProgress) {
     const token = localStorage.getItem("token");
-    fetch("http://127.0.0.1:5000/profile/view", {
+    fetch("http://127.0.0.1:5000/profile/profileview", {
+      method: "GET",
       headers: {
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
       }
     })
       .then(res => res.json())
       .then(data => {
-        username.textContent = data.username;
-        email.textContent = data.email || "Hidden";
-        level.textContent = data.level || 1;
-        rank.textContent = "N/A";
-        points.textContent = "N/A";
+        console.log("PROFILE DATA:", data);
+
+        textContent = data.username;
+        textContent = data.email || "Hidden";
+        textContent = data.level || 1;
+        textContent = "N/A";
+        textContent = "N/A";
         if (avatar && data.avatar_url) {
           avatar.src = data.avatar_url;
         }

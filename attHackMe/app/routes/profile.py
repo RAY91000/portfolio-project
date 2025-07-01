@@ -5,12 +5,16 @@ from app.models.user import User
 from app.models.progress import Progress
 from app.models.challenge import Challenge
 
+
 profile_bp = Blueprint('profile', __name__)
 
 
-@profile_bp.route("/profile/view", methods=["GET"])
-@jwt_required()
+@profile_bp.route("/profileview", methods=["GET", "OPTIONS"])
+@jwt_required(optional=True)
 def get_profile():
+    if request.method == "OPTIONS":
+        return '', 204
+    
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
     if not user:
@@ -41,7 +45,9 @@ def get_profile():
         "avatar_url": user.avatar_url,
         "banner_url": user.banner_url,
         "progress": progress,
-        "show_email": user.show_email
+        "show_email": user.show_email,
+        "rank": user.rank,
+        "points": user.points
     })
 
 
@@ -65,3 +71,21 @@ def update_profile_settings():
 
     db.session.commit()
     return jsonify({"message": "Profile updated successfully."}), 200
+
+
+@profile_bp.route("/email_visibility", methods=["POST"])
+@jwt_required()
+def update_email_visibility():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.get_json()
+    if "is_public" not in data:
+        return jsonify({"error": "Missing field 'is_public'"}), 400
+
+    user.show_email = bool(data["is_public"])
+    db.session.commit()
+    return jsonify({"message": "Email visibility updated."}), 200
+

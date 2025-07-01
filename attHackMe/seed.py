@@ -22,24 +22,33 @@ with app.app_context():
     admin.set_password("admin1234")
     db.session.add(admin)
 
-    # Utilisateur de test principal
+        # Utilisateur principal
     main_user = User(
-        username="user",
-        email="user@att.com"
+        username="raph",
+        email="raphael.dott@hotmail.com",
+        avatar_url="/static/images/avatar.png",
+        banner_url="/static/images/banner.png",
+        points=120,
+        rank="#1",
+        show_email=True
     )
-    main_user.set_password("user1234")
+    main_user.set_password("raph")
     db.session.add(main_user)
 
-    # Générer 9 utilisateurs fictifs
-    users = []
+    # Utilisateurs fictifs
     for i in range(1, 10):
         u = User(
             username=f"user{i}",
-            email=f"user{i}@att.com"
+            email=f"user{i}@att.com",
+            avatar_url="/static/images/avatar.png",
+            banner_url="/static/images/banner.png",
+            points=100 - i * 10,          # Exemple de score décroissant
+            rank=f"#{i+1}",                # Rang fictif
+            show_email=False              # Tous masquent leur email
         )
         u.set_password(f"test{i}123")
-        users.append(u)
         db.session.add(u)
+
 
     # Créer des challenges
     challenges = []
