@@ -214,6 +214,68 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ✅ Settings page logic
+  const settingsForm = document.getElementById("settings-form");
+  if (settingsForm) {
+    const avatarInput = document.getElementById("avatar_url");
+    const bannerInput = document.getElementById("banner_url");
+    const emailPublicCheckbox = document.getElementById("email_public");
+    const messageBox = document.getElementById("settings-message");
+    const token = localStorage.getItem("token");
+
+    // Charger les valeurs actuelles
+    fetch("http://127.0.0.1:5000/profile/profileview", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        avatarInput.value = data.avatar_url || "";
+        bannerInput.value = data.banner_url || "";
+        emailPublicCheckbox.checked = data.email_public === true;
+      })
+      .catch(err => {
+        console.error("Erreur chargement profil:", err);
+      });
+
+    // Gérer le submit
+    settingsForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        avatar_url: avatarInput.value,
+        banner_url: bannerInput.value,
+        email_public: emailPublicCheckbox.checked
+      };
+
+      try {
+        const res = await fetch("http://127.0.0.1:5000/profile/settings", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          messageBox.textContent = "✅ Paramètres mis à jour.";
+          messageBox.className = "text-green-400 text-sm mt-2 text-center";
+        } else {
+          messageBox.textContent = result.error || "❌ Erreur inconnue.";
+          messageBox.className = "text-red-400 text-sm mt-2 text-center";
+        }
+      } catch (err) {
+        console.error("Erreur mise à jour:", err);
+        messageBox.textContent = "Erreur réseau.";
+      }
+    });
+  }
+
+
   // ✅ Show username if logged in
   const usernameDisplay = document.getElementById("usernameDisplay");
   const userBadge = document.getElementById("userBadge");

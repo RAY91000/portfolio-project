@@ -4,7 +4,7 @@ from app.extensions import db
 from app.models.user import User
 from app.models.progress import Progress
 from app.models.challenge import Challenge
-
+from flask import render_template
 
 profile_bp = Blueprint('profile', __name__)
 
@@ -40,15 +40,24 @@ def get_profile():
 
     return jsonify({
         "username": user.username,
-        "email": user.email if user.show_email else None,
+        "email": user.email if user.email_public else None,
         "level": level,
         "avatar_url": user.avatar_url,
         "banner_url": user.banner_url,
         "progress": progress,
-        "show_email": user.show_email,
+        "email_public": user.email_public,
         "rank": user.rank,
         "points": user.points
     })
+
+
+
+
+@profile_bp.route("/settings", methods=["GET"])
+def serve_settings_page():
+    return render_template("settings.html")
+
+
 
 
 @profile_bp.route("/settings", methods=["PUT"])

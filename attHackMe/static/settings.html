@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Paramètres du Profil - AttHackMe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background: linear-gradient(145deg, #0f0f1b, #1b1f3a);
+    }
+  </style>
+</head>
+<body class="text-white min-h-screen px-6 py-8">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-purple-400">⚙️ Paramètres du Profil</h1>
+    <a href="/profile" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-sm">← Retour au Profil</a>
+  </div>
+
+  <!-- Settings Card -->
+  <div class="bg-[#1e1e2f] shadow-xl rounded-xl p-6 max-w-2xl mx-auto border border-purple-700">
+
+    <form id="settings-form" class="space-y-6">
+      <!-- Avatar -->
+      <div>
+        <label class="block text-sm text-gray-300 mb-1">URL de l'avatar :</label>
+        <input type="text" name="avatar_url" id="avatar_url"
+               class="w-full px-3 py-2 rounded bg-gray-800 border border-purple-600 text-white"
+               placeholder="https://...">
+      </div>
+
+      <!-- Bannière -->
+      <div>
+        <label class="block text-sm text-gray-300 mb-1">URL de la bannière :</label>
+        <input type="text" name="banner_url" id="banner_url"
+               class="w-full px-3 py-2 rounded bg-gray-800 border border-purple-600 text-white"
+               placeholder="https://...">
+      </div>
+
+      <!-- Email public -->
+      <div class="flex items-center gap-2">
+        <input type="checkbox" name="email_public" id="email_public" class="form-checkbox h-4 w-4 text-purple-600">
+        <label for="email_public" class="text-sm text-gray-300">Rendre mon email visible par les autres</label>
+      </div>
+
+      <!-- Bouton -->
+      <button type="submit"
+              class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white text-sm">
+        💾 Enregistrer les modifications
+      </button>
+
+      <div id="settings-message" class="text-sm mt-2 text-center"></div>
+    </form>
+  </div>
+
+  <script>
+    // Charger les infos existantes depuis /profileview
+    async function loadProfileData() {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      const res = await fetch("/profileview", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) return;
+      const user = await res.json();
+
+      document.getElementById("avatar_url").value = user.avatar_url || "";
+      document.getElementById("banner_url").value = user.banner_url || "";
+      document.getElementById("email_public").checked = user.show_email;
+    }
+
+    // Form submission
+    document.getElementById("settings-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        alert("Non connecté.");
+        return;
+      }
+
+      const avatar_url = document.getElementById("avatar_url").value;
+      const banner_url = document.getElementById("banner_url").value;
+      const email_public = document.getElementById("email_public").checked;
+
+      try {
+        const response = await fetch("/settings", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            avatar_url,
+            banner_url,
+            email_public
+          })
+        });
+
+        const result = await response.json();
+        const msg = document.getElementById("settings-message");
+
+        if (response.ok) {
+          msg.textContent = "✅ Paramètres mis à jour avec succès.";
+          msg.className = "text-green-400 text-sm mt-2 text-center";
+        } else {
+          msg.textContent = result.error || "❌ Erreur inconnue.";
+          msg.className = "text-red-400 text-sm mt-2 text-center";
+        }
+
+      } catch (err) {
+        document.getElementById("settings-message").textContent = "Erreur réseau.";
+      }
+    });
+
+    // Charger au démarrage
+    loadProfileData();
+  </script>
+</body>
+</html>
