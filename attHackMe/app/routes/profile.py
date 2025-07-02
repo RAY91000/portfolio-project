@@ -20,6 +20,14 @@ def get_profile():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
+    # Liste des fichiers valides
+    valid_avatars = {"avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png"}
+    valid_banners = {"banner1.jpg", "banner2.jpg", "banner3.jpg", "banner4.jpg"}
+
+
+    # Avatar fallback si invalide ou vide
+    avatar = user.avatar if user.avatar in valid_avatars else "avatar1.png"
+    banner = user.banner if user.banner in valid_banners else "banner1.jpg"
     # Load progress
     progress_entries = Progress.query.filter_by(user_id=user.id).all()
     progress = []
@@ -42,8 +50,8 @@ def get_profile():
         "username": user.username,
         "email": user.email if user.email_public else None,
         "level": level,
-        "avatar_url": user.avatar_url,
-        "banner_url": user.banner_url,
+        "avatar": user.avatar,
+        "banner": user.banner,
         "progress": progress,
         "email_public": user.email_public,
         "rank": user.rank,
@@ -63,12 +71,12 @@ def update_profile_settings():
     data = request.get_json()
 
     # Champs autorisés
-    if "avatar_url" in data:
-        user.avatar_url = data["avatar_url"]
-    if "banner_url" in data:
-        user.banner_url = data["banner_url"]
+    if "avatar" in data:
+        user.avatar = data["avatar"]
+    if "banner" in data:
+        user.banner = data["banner"]
     if "email_public" in data:
-        user.email_public = bool(data["email_public"])  # Cast vers bool
+        user.email_public = bool(data["email_public"])
 
     db.session.commit()
     return jsonify({"message": "Profile updated successfully."}), 200

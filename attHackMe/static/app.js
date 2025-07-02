@@ -1,39 +1,12 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // ✅ Home page zoom + sound
-  if (window.location.pathname === "/" || window.location.pathname === "/home.html") {
-    const board = document.getElementById("board-button");
-    const scene = document.getElementById("scene");
-    const sound = document.getElementById("click-sound");
 
-    if (board && scene) {
-      board.addEventListener("click", function (e) {
-        e.preventDefault();
-        if (sound) {
-          sound.volume = 1.0;
-          sound.currentTime = 0;
-          sound.play().catch(err => console.warn("Audio play error:", err));
-        }
-        scene.classList.add("zoom-out");
-        setTimeout(() => {
-          window.location.href = board.href;
-        }, 1000);
-      });
-    }
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ app.js chargé !");
 
   const registerForm = document.getElementById("registerForm");
   const loginForm = document.getElementById("loginForm");
   const challengeList = document.getElementById("challengeList");
   const challengeDetails = document.getElementById("challengeDetails");
   const scrollWrapper = document.getElementById("scrollWrapper");
-  const avatar = document.getElementById("avatar");
-  const username = document.getElementById("username");
-  const email = document.getElementById("email");
-  const level = document.getElementById("level");
-  const rank = document.getElementById("rank");
-  const points = document.getElementById("points");
-  const publicEmailCheckbox = document.getElementById("publicEmail");
-  const challengeProgress = document.getElementById("challengeProgress");
 
   // ✅ Register
   if (registerForm) {
@@ -75,7 +48,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Load Challenges
+  // ✅ Home zoom + sound
+  if (window.location.pathname === "/" || window.location.pathname === "/home.html") {
+    const board = document.getElementById("board-button");
+    const scene = document.getElementById("scene");
+    const sound = document.getElementById("click-sound");
+
+    if (board && scene) {
+      board.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (sound) {
+          sound.volume = 1.0;
+          sound.currentTime = 0;
+          sound.play().catch(err => console.warn("Audio play error:", err));
+        }
+        scene.classList.add("zoom-out");
+        setTimeout(() => {
+          window.location.href = board.href;
+        }, 1000);
+      });
+    }
+  }
+
+  // ✅ Load profile settings
+  if (document.getElementById("page-settings")) {
+    console.log("🧠 page-settings détectée");
+    loadProfileData();
+  }
+
+  // ✅ Challenge List + Details
   if (challengeList) {
     const difficultyIcons = {
       "Easy": "🟢 Noob",
@@ -134,8 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
           }
         });
-
-        updateFadeEffect();
       })
       .catch(error => {
         challengeList.innerHTML = `<li class="text-red-500">❌ Failed to load challenges: ${error.message}</li>`;
@@ -143,7 +142,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // ✅ Challenge Detail View
   if (challengeDetails) {
     const id = window.location.pathname.split("/").pop();
     fetch(`http://127.0.0.1:5000/challenges/${id}`)
@@ -160,51 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // ✅ Profile page logic
-  if (username && email && level && rank && points && challengeProgress) {
-    const token = localStorage.getItem("token");
-    fetch("http://127.0.0.1:5000/profile/profileview", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log("PROFILE DATA:", data);
-
-        textContent = data.username;
-        textContent = data.email || "Hidden";
-        textContent = data.level || 1;
-        textContent = "N/A";
-        textContent = "N/A";
-        if (avatar && data.avatar_url) {
-          avatar.src = data.avatar_url;
-        }
-        if (publicEmailCheckbox) {
-          publicEmailCheckbox.checked = data.is_email_public;
-          publicEmailCheckbox.addEventListener("change", () => {
-            fetch("http://127.0.0.1:5000/profile/email_visibility", {
-              method: "POST",
-              headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ is_public: publicEmailCheckbox.checked })
-            });
-          });
-        }
-        data.progress.forEach(item => {
-          const li = document.createElement("li");
-          li.className = "text-sm text-gray-300";
-          li.textContent = `${item.title} - ${item.status}`;
-          challengeProgress.appendChild(li);
-        });
-      })
-      .catch(err => console.error("Failed to load profile:", err));
-  }
-
-  // ✅ Logout button
+  // ✅ Logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
@@ -214,69 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Settings page logic
-  const settingsForm = document.getElementById("settings-form");
-  if (settingsForm) {
-    const avatarInput = document.getElementById("avatar_url");
-    const bannerInput = document.getElementById("banner_url");
-    const emailPublicCheckbox = document.getElementById("email_public");
-    const messageBox = document.getElementById("settings-message");
-    const token = localStorage.getItem("token");
-
-    // Charger les valeurs actuelles
-    fetch("http://127.0.0.1:5000/profile/profileview", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        avatarInput.value = data.avatar_url || "";
-        bannerInput.value = data.banner_url || "";
-        emailPublicCheckbox.checked = data.email_public === true;
-      })
-      .catch(err => {
-        console.error("Erreur chargement profil:", err);
-      });
-
-    // Gérer le submit
-    settingsForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const payload = {
-        avatar_url: avatarInput.value,
-        banner_url: bannerInput.value,
-        email_public: emailPublicCheckbox.checked
-      };
-
-      try {
-        const res = await fetch("http://127.0.0.1:5000/profile/settings", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await res.json();
-        if (res.ok) {
-          messageBox.textContent = "✅ Paramètres mis à jour.";
-          messageBox.className = "text-green-400 text-sm mt-2 text-center";
-        } else {
-          messageBox.textContent = result.error || "❌ Erreur inconnue.";
-          messageBox.className = "text-red-400 text-sm mt-2 text-center";
-        }
-      } catch (err) {
-        console.error("Erreur mise à jour:", err);
-        messageBox.textContent = "Erreur réseau.";
-      }
-    });
-  }
-
-
-  // ✅ Show username if logged in
+  // ✅ Affichage username
   const usernameDisplay = document.getElementById("usernameDisplay");
   const userBadge = document.getElementById("userBadge");
   if (usernameDisplay && userBadge) {
@@ -289,28 +181,124 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ✅ Fade effect
-  function updateFadeEffect() {
-    if (!challengeList || !scrollWrapper) return;
-    const wrapperRect = scrollWrapper.getBoundingClientRect();
-    const centerY = wrapperRect.top + wrapperRect.height / 2;
-    const maxDistance = wrapperRect.height / 2;
+});
 
-    const items = challengeList.querySelectorAll("li");
-    items.forEach(item => {
-      const itemRect = item.getBoundingClientRect();
-      const itemCenter = itemRect.top + itemRect.height / 2;
-      const distance = Math.abs(centerY - itemCenter);
-      const opacity = 1 - Math.min(distance / maxDistance, 1);
-      item.style.opacity = opacity.toFixed(2);
+
+
+
+function loadProfileData() {
+  console.log("✅ Fonction loadProfileData appelée");
+
+  const avatarList = ["avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png"];
+  const bannerList = ["banner1.jpg", "banner2.jpg", "banner3.jpg", "banner4.jpg"];
+
+  const baseAvatarPath = "/static/images/avatars/";
+  const baseBannerPath = "/static/images/banners/";
+
+  let selectedAvatar = null;
+  let selectedBanner = null;
+
+  const avatarContainer = document.getElementById("avatar-list");
+  const bannerContainer = document.getElementById("banner-list");
+
+  const currentAvatar = document.getElementById("current-avatar");
+  const currentBanner = document.getElementById("current-banner");
+  const emailPublicCheckbox = document.getElementById("email_public");
+  const messageBox = document.getElementById("settings-message");
+
+  function populateSelection(container, list, type, selectedValue) {
+    console.log(`🧩 populateSelection pour ${type}, valeur sélectionnée: ${selectedValue}`);
+    container.innerHTML = "";
+
+    list.forEach(imgName => {
+      const img = document.createElement("img");
+      img.src = (type === "avatar" ? baseAvatarPath : baseBannerPath) + imgName;
+      img.classList.add(type === "avatar" ? "avatar-option" : "banner-option");
+      img.width = type === "avatar" ? 80 : 160;
+      img.height = type === "avatar" ? 80 : 90;
+
+      if (imgName === selectedValue) img.classList.add("selected");
+
+      img.onclick = () => {
+        document.querySelectorAll("." + (type === "avatar" ? "avatar-option" : "banner-option"))
+          .forEach(el => el.classList.remove("selected"));
+        img.classList.add("selected");
+
+        if (type === "avatar") {
+          selectedAvatar = imgName;
+          currentAvatar.src = baseAvatarPath + imgName;
+          avatarContainer.classList.add("hidden");
+        } else {
+          selectedBanner = imgName;
+          currentBanner.src = baseBannerPath + imgName;
+          bannerContainer.classList.add("hidden");
+        }
+      };
+
+      container.appendChild(img);
     });
   }
 
-  if (scrollWrapper) {
-    scrollWrapper.addEventListener("scroll", updateFadeEffect);
-    window.addEventListener("resize", updateFadeEffect);
+  currentAvatar?.addEventListener("click", () => {
+    console.log("clic sur avatar");
+    avatarContainer?.classList.toggle("hidden");
+  });
 
-    const observer = new MutationObserver(updateFadeEffect);
-    observer.observe(challengeList, { childList: true });
-  }
-});
+  currentBanner?.addEventListener("click", () => {
+    bannerContainer?.classList.toggle("hidden");
+  });
+
+  const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+  if (!token) return;
+
+  fetch("/profileview", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => res.json())
+    .then(user => {
+      console.log("donnée user :", user);
+      selectedAvatar = user.avatar || avatarList[0];
+      selectedBanner = user.banner || bannerList[0];
+
+      currentAvatar.src = baseAvatarPath + selectedAvatar;
+      currentBanner.src = baseBannerPath + selectedBanner;
+
+      emailPublicCheckbox.checked = user.show_email || false;
+
+      populateSelection(avatarContainer, avatarList, "avatar", selectedAvatar);
+      populateSelection(bannerContainer, bannerList, "banner", selectedBanner);
+    })
+    .catch(err => console.error("Erreur lors du chargement du profil:", err));
+
+  const settingsForm = document.getElementById("settings-form");
+  settingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email_public = emailPublicCheckbox.checked;
+
+    const res = await fetch("/settings", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        avatar: selectedAvatar,
+        banner: selectedBanner,
+        email_public
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      messageBox.textContent = "✅ Paramètres mis à jour.";
+      messageBox.className = "text-green-400 text-sm mt-2 text-center";
+    } else {
+      messageBox.textContent = data.error || "❌ Erreur inconnue.";
+      messageBox.className = "text-red-400 text-sm mt-2 text-center";
+    }
+  });
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Paramètres du Profil - AttHackMe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    .avatar-option, .banner-option {
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s ease-in-out;
+    }
+    .avatar-option.selected, .banner-option.selected {
+      border-color: #7c3aed;
+      transform: scale(1.05);
+    }
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background: linear-gradient(145deg, #0f0f1b, #1b1f3a);
+    }
+  </style>
+</head>
+<body id="page-settings" class="text-white min-h-screen px-6 py-8">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-purple-400">⚙️ Paramètres du Profil</h1>
+    <a href="/profile" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-sm">← Retour au Profil</a>
+  </div>
+
+  <!-- Settings Card -->
+  <div class="bg-[#1e1e2f] shadow-xl rounded-xl p-6 max-w-2xl mx-auto border border-purple-700">
+    <form id="settings-form" class="space-y-6">
+
+      <!-- Avatar -->
+      <div>
+        <label class="block text-sm text-gray-300 mb-1">Avatar actuel :</label>
+        <img id="current-avatar" src="" alt="Avatar"
+             class="w-24 h-24 rounded-full border-2 border-purple-500 cursor-pointer">
+        <div id="avatar-list" class="mt-4 flex flex-wrap gap-4 hidden"></div>
+      </div>
+
+      <!-- Bannière -->
+      <div>
+        <label class="block text-sm text-gray-300 mb-1">Bannière actuelle :</label>
+        <img id="current-banner" src="" alt="Bannière"
+             class="w-full h-32 object-cover border-2 border-purple-500 cursor-pointer">
+        <div id="banner-list" class="mt-4 flex flex-wrap gap-4 hidden"></div>
+      </div>
+
+      <!-- Email public -->
+      <div class="flex items-center gap-2">
+        <input type="checkbox" name="email_public" id="email_public" class="form-checkbox h-4 w-4 text-purple-600">
+        <label for="email_public" class="text-sm text-gray-300">Rendre mon email visible par les autres</label>
+      </div>
+
+      <!-- Bouton -->
+      <button type="submit"
+              class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white text-sm">
+        💾 Enregistrer les modifications
+      </button>
+
+      <div id="settings-message" class="text-sm mt-2 text-center"></div>
+    </form>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

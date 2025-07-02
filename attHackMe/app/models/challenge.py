@@ -20,4 +20,16 @@ class Challenge(BaseModel):
     def __repr__(self):
         return f"<Challenge {self.title}>"
 
+    def to_dict(self):
+    return {
+        "id": self.id,
+        "title": self.title,
+        "description": self.description,
+        "difficulty": self.difficulty,
+        "category": self.category,
+        "instructions": self.instructions,
+        "docker_image": self.docker_image
+    }
+
+
 
