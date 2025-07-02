@@ -34,5 +34,10 @@ def profile():
         print(f"JWT verification failed: {e}")
     return render_template('profile.html')
 
+@app.route("/profile/settings")
+def profile_settings():
+    return render_template("settings.html")
+
+
 if __name__ == '__main__':
     app.run(port=5001, debug=True)

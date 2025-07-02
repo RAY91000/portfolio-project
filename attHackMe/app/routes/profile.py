@@ -4,7 +4,7 @@ from app.extensions import db
 from app.models.user import User
 from app.models.progress import Progress
 from app.models.challenge import Challenge
-from flask import render_template
+from flask import send_from_directory
 
 profile_bp = Blueprint('profile', __name__)
 
@@ -49,14 +49,6 @@ def get_profile():
         "rank": user.rank,
         "points": user.points
     })
-
-
-
-
-@profile_bp.route("/settings", methods=["GET"])
-def serve_settings_page():
-    return render_template("settings.html")
-
 
 
 
