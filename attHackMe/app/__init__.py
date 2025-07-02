@@ -6,13 +6,19 @@ from app.routes.user import user_bp
 from app.routes.challenge import challenge_bp
 from app.routes.review import review_bp
 from app.routes.submission import submission_bp
+from app.routes.profile import profile_bp
+from app.routes.progress import progress_bp
+from app.routes.leaderboard import leaderboard_bp
 from config import config as config_dict
+from flask_jwt_extended import JWTManager
 
 def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config_dict[config_name])
     app.config['WTF_CSRF_ENABLED'] = False  # désactive CSRF pour les tests
+    app.config['JWT_SECRET_KEY'] = 'super-secret-key'  # ⚠️ change ça en prod
     CORS(app)
+    JWTManager(app)
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -31,5 +37,8 @@ def create_app(config_name='default'):
     app.register_blueprint(challenge_bp, url_prefix="/challenges")
     app.register_blueprint(review_bp, url_prefix="/reviews")
     app.register_blueprint(submission_bp, url_prefix="/submissions")
+    app.register_blueprint(profile_bp, url_prefix="/profile")
+    app.register_blueprint(progress_bp, url_prefix="/progress")
+    app.register_blueprint(leaderboard_bp, url_prefix="/leaderboard")
 
     return app

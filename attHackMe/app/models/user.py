@@ -1,6 +1,8 @@
 from app.extensions import db, bcrypt
 from flask_login import UserMixin
 from .base_model import BaseModel
+from sqlalchemy.orm import relationship
+
 
 class User(UserMixin, BaseModel):
     __tablename__ = 'users'
@@ -9,6 +11,12 @@ class User(UserMixin, BaseModel):
     email = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    progress = relationship("Progress", back_populates="user", cascade="all, delete-orphan")
+    points = db.Column(db.Integer, default=0)
+    avatar_url = db.Column(db.String(255), default="")
+    banner_url = db.Column(db.String(255), default="")
+    email_public = db.Column(db.Boolean, default=False)
+
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')

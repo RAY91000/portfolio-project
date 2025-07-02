@@ -1,12 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ✅ Home page zoom + sound
-  if (window.location.pathname === "/" || window.location.pathname === "/home.html") {
-    const board = document.getElementById("board-button");
-    const scene = document.getElementById("scene");
-    const sound = document.getElementById("click-sound");
+  console.log("✅ app.js chargé");
 
+  const pathname = window.location.pathname;
+  const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+  const username = localStorage.getItem("username");
+
+  const board = document.getElementById("board-button");
+  const scene = document.getElementById("scene");
+  const sound = document.getElementById("click-sound");
+  const registerForm = document.getElementById("registerForm");
+  const loginForm = document.getElementById("loginForm");
+  const challengeList = document.getElementById("challengeList");
+  const challengeDetails = document.getElementById("challengeDetails");
+  const scrollWrapper = document.getElementById("scrollWrapper");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const usernameDisplay = document.getElementById("usernameDisplay");
+  const userBadge = document.getElementById("userBadge");
+
+  // 🎮 Page d'accueil : zoom et son
+  if (pathname === "/" || pathname === "/home.html") {
     if (board && scene) {
-      board.addEventListener("click", function (e) {
+      board.addEventListener("click", (e) => {
         e.preventDefault();
         if (sound) {
           sound.volume = 1.0;
@@ -14,20 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
           sound.play().catch(err => console.warn("Audio play error:", err));
         }
         scene.classList.add("zoom-out");
-        setTimeout(() => {
-          window.location.href = board.href;
-        }, 1000);
+        setTimeout(() => window.location.href = board.href, 1000);
       });
     }
   }
 
-  const registerForm = document.getElementById("registerForm");
-  const loginForm = document.getElementById("loginForm");
-  const challengeList = document.getElementById("challengeList");
-  const challengeDetails = document.getElementById("challengeDetails");
-  const scrollWrapper = document.getElementById("scrollWrapper");
-
-  // ✅ Register
+  // 📝 Formulaire d'inscription
   if (registerForm) {
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -38,15 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
         cache: "no-store"
       });
       const data = await response.json();
-      if (response.ok) {
-        window.location.href = "/login";
-      } else {
-        document.getElementById("registerMsg").innerText = data.message || data.error;
-      }
+      document.getElementById("registerMsg").innerText = response.ok ? "" : data.message || data.error;
+      if (response.ok) window.location.href = "/login";
     });
   }
 
-  // ✅ Login
+  // 🔐 Formulaire de connexion
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -67,12 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ Load Challenges
+  // 🧠 Affichage des challenges
   if (challengeList) {
     const difficultyIcons = {
-      "Easy": "🟢 Noob",
-      "Medium": "🟡 Medium",
-      "Hard": "🔴 Ranker"
+      Easy: "🟢 Noob",
+      Medium: "🟡 Medium",
+      Hard: "🔴 Ranker"
     };
 
     fetch("http://127.0.0.1:5000/challenges/")
@@ -92,39 +95,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 </p>
               </div>
               <div class="flex flex-col gap-2 text-sm">
-                <a href="/challenge/${challenge.id}" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-center">
-                  🔍 View
-                </a>
-                <button class="start-btn bg-pink-600 text-white px-3 py-2 rounded hover:bg-pink-700" data-id="${challenge.id}">
-                  🌹 Start
-                </button>
+                <a href="/challenge/${challenge.id}" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-center">🔍 View</a>
+                <button class="start-btn bg-pink-600 text-white px-3 py-2 rounded hover:bg-pink-700" data-id="${challenge.id}">🌹 Start</button>
               </div>
             </div>
           `;
+
           challengeList.appendChild(li);
 
           const startBtn = li.querySelector(".start-btn");
-          if (startBtn) {
-            startBtn.addEventListener("click", async () => {
-              const token = localStorage.getItem("token");
-              if (!token) {
-                alert("Please log in to start the challenge.");
-                window.location.href = "/login";
-                return;
+          startBtn?.addEventListener("click", async () => {
+            if (!token) {
+              alert("Please log in to start the challenge.");
+              window.location.href = "/login";
+              return;
+            }
+
+            const response = await fetch(`http://127.0.0.1:5000/challenges/${challenge.id}/start`, {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
               }
-
-              const response = await fetch(`http://127.0.0.1:5000/challenges/${challenge.id}/start`, {
-                method: "POST",
-                headers: {
-                  "Authorization": `Bearer ${token}`,
-                  "Content-Type": "application/json"
-                }
-              });
-
-              const result = await response.json();
-              alert(result.message || "Challenge started successfully!");
             });
-          }
+
+            const result = await response.json();
+            alert(result.message || "Challenge started successfully!");
+          });
         });
 
         updateFadeEffect();
@@ -135,9 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // ✅ Challenge Detail View
+  // 📄 Détail d’un challenge
   if (challengeDetails) {
-    const id = window.location.pathname.split("/").pop();
+    const id = pathname.split("/").pop();
     fetch(`http://127.0.0.1:5000/challenges/${id}`)
       .then(res => res.json())
       .then(ch => {
@@ -152,21 +149,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // ✅ Logout button
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("username");
-      window.location.href = "/login";
-    });
-  }
+  // 🔚 Déconnexion
+  logoutBtn?.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.href = "/login";
+  });
 
-  // ✅ Show username if logged in
-  const usernameDisplay = document.getElementById("usernameDisplay");
-  const userBadge = document.getElementById("userBadge");
+  // 👤 Affichage de l’utilisateur connecté
   if (usernameDisplay && userBadge) {
-    const username = localStorage.getItem("username");
     if (username) {
       usernameDisplay.textContent = ` ${username}`;
       userBadge.classList.remove("hidden");
@@ -175,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ✅ Fade effect
+  // 🎨 Effet de fondu des challenges
   function updateFadeEffect() {
     if (!challengeList || !scrollWrapper) return;
     const wrapperRect = scrollWrapper.getBoundingClientRect();
@@ -195,8 +186,130 @@ document.addEventListener("DOMContentLoaded", () => {
   if (scrollWrapper) {
     scrollWrapper.addEventListener("scroll", updateFadeEffect);
     window.addEventListener("resize", updateFadeEffect);
-
     const observer = new MutationObserver(updateFadeEffect);
     observer.observe(challengeList, { childList: true });
   }
+
+  // 🛠️ Paramètres utilisateur (settings.html)
+  if (document.getElementById("page-settings")) {
+    loadProfileData();
+  }
 });
+
+
+function loadProfileData() {
+  console.log("✅ Fonction loadProfileData appelée");
+
+  const avatarList = ["avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png"];
+  const bannerList = ["banner1.jpg", "banner2.jpg", "banner3.jpg", "banner4.jpg"];
+
+  const baseAvatarPath = "/static/images/avatars/";
+  const baseBannerPath = "/static/images/banners/";
+
+  let selectedAvatar = null;
+  let selectedBanner = null;
+
+  const avatarContainer = document.getElementById("avatar-list");
+  const bannerContainer = document.getElementById("banner-list");
+
+  const currentAvatar = document.getElementById("current-avatar");
+  const currentBanner = document.getElementById("current-banner");
+  const emailPublicCheckbox = document.getElementById("email_public");
+  const messageBox = document.getElementById("settings-message");
+
+  function populateSelection(container, list, type, selectedValue) {
+    console.log(`🧩 populateSelection pour ${type}, valeur sélectionnée: ${selectedValue}`);
+    container.innerHTML = "";
+
+    list.forEach(imgName => {
+      const img = document.createElement("img");
+      img.src = (type === "avatar" ? baseAvatarPath : baseBannerPath) + imgName;
+      img.classList.add(type === "avatar" ? "avatar-option" : "banner-option");
+      img.width = type === "avatar" ? 80 : 160;
+      img.height = type === "avatar" ? 80 : 90;
+
+      if (imgName === selectedValue) img.classList.add("selected");
+
+      img.onclick = () => {
+        document.querySelectorAll("." + (type === "avatar" ? "avatar-option" : "banner-option"))
+          .forEach(el => el.classList.remove("selected"));
+        img.classList.add("selected");
+
+        if (type === "avatar") {
+          selectedAvatar = imgName;
+          currentAvatar.src = baseAvatarPath + imgName;
+          avatarContainer.classList.add("hidden");
+        } else {
+          selectedBanner = imgName;
+          currentBanner.src = baseBannerPath + imgName;
+          bannerContainer.classList.add("hidden");
+        }
+      };
+
+      container.appendChild(img);
+    });
+  }
+
+  currentAvatar?.addEventListener("click", () => {
+    console.log("clic sur avatar");
+    avatarContainer?.classList.toggle("hidden");
+  });
+
+  currentBanner?.addEventListener("click", () => {
+    bannerContainer?.classList.toggle("hidden");
+  });
+
+  const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+  if (!token) return;
+
+  fetch("/profileview", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => res.json())
+    .then(user => {
+      console.log("donnée user :", user);
+      selectedAvatar = user.avatar || avatarList[0];
+      selectedBanner = user.banner || bannerList[0];
+
+      currentAvatar.src = baseAvatarPath + selectedAvatar;
+      currentBanner.src = baseBannerPath + selectedBanner;
+
+      emailPublicCheckbox.checked = user.show_email || false;
+
+      populateSelection(avatarContainer, avatarList, "avatar", selectedAvatar);
+      populateSelection(bannerContainer, bannerList, "banner", selectedBanner);
+    })
+    .catch(err => console.error("Erreur lors du chargement du profil:", err));
+
+  const settingsForm = document.getElementById("settings-form");
+  settingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email_public = emailPublicCheckbox.checked;
+
+    const res = await fetch("/settings", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        avatar: selectedAvatar,
+        banner: selectedBanner,
+        email_public
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      messageBox.textContent = "✅ Paramètres mis à jour.";
+      messageBox.className = "text-green-400 text-sm mt-2 text-center";
+    } else {
+      messageBox.textContent = data.error || "❌ Erreur inconnue.";
+      messageBox.className = "text-red-400 text-sm mt-2 text-center";
+    }
+  });
+}
