@@ -56,3 +56,9 @@ def login():
 def logout():
     logout_user()
     return jsonify({"message": "Logged out"}), 200
+
+from flask import render_template
+
+@auth_bp.route('/login', methods=['GET'])
+def login_page():
+    return render_template('login.html')
