@@ -13,6 +13,8 @@ class Challenge(BaseModel):
     flag = db.Column(db.String(100), nullable=False)
     docker_image = db.Column(db.String(100), nullable=True)
     instructions = db.Column(db.Text, nullable=True)
+    progress = db.relationship("Progress", back_populates="challenge", cascade="all, delete-orphan")
+
 
 
     def __repr__(self):

@@ -1,3 +1,29 @@
+
+.dogtag-button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(145deg, #d4d4d4, #f0f0f0, #a0a0a0);
+  color: #949393;
+  border: 2px solid #888;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 1px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.dogtag-button:hover {
+  background: linear-gradient(145deg, #e0e0e0, #cacaca, #999);
+  box-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+  transform: scale(1.05);
+  color: #1f1f1f;
+}
+
+
+
 /* Hide scrollbar on all scrollable elements */
 #scrollWrapper {
   scrollbar-width: none;        /* Firefox */

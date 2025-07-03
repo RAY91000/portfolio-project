@@ -5,7 +5,8 @@ from uuid import UUID
 from flask_jwt_extended import verify_jwt_in_request
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5001"}})
+
 
 @app.route('/')
 def home():

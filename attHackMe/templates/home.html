@@ -33,6 +33,17 @@
       <img src="static/images/board.png" alt="Board" class="w-full h-full object-contain pointer-events-auto" />
     </a>
   </div>
+  <div id="authSection" class="text-center mt-6">
+    <!-- Bouton visibles quand non connecté -->
+    <div id="authButtons" class="hidden fixed top-4 right-4 z-50 flex gap-4">
+      <a href="/register" class="dogtag-button"> Register</a>
+      <a href="/login" class="dogtag-button"> Login</a>
+    </div>
+    <!-- Bouton visibles quand connecté -->
+    <button id="logoutBtn" class="chrome-dogtag mt-4 px-4 py-2">
+      🔓 Logout
+    </button>
+  </div>
 
   <!-- BUILDER DRAG+RESIZE   put draggable instead of absolute
   <script>

@@ -16,7 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const usernameDisplay = document.getElementById("usernameDisplay");
   const userBadge = document.getElementById("userBadge");
+  const authButtons = document.getElementById("authButtons");
 
+  // 👋 Affiche Register/Login uniquement si l’utilisateur n’est PAS connecté
+  if (authButtons && !token) {
+    authButtons.classList.remove("hidden");
+  }
+
+    
   // 🎮 Page d'accueil : zoom et son
   if (pathname === "/" || pathname === "/home.html") {
     if (board && scene) {
@@ -63,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("username", data.username);
-        window.location.href = "/challenges";
+        window.location.href = "/";
       } else {
         document.getElementById("loginMsg").innerText = data.message || data.error;
       }
@@ -150,11 +157,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 🔚 Déconnexion
-  logoutBtn?.addEventListener("click", () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    window.location.href = "/login";
-  });
+  if (logoutBtn) {
+    const token = localStorage.getItem("token") || localStorageStorage.getItem("access_token");
+    if (!token) {
+      logoutBtn.classList.add("hidden"); // Masquer le bouton si non connecté
+    } else {
+      logoutBtn.classList.remove("hidden"); // Afficher le bouton si connecté
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("username");
+        window.location.href = "/";
+      });
+    }
+  }
 
   // 👤 Affichage de l’utilisateur connecté
   if (usernameDisplay && userBadge) {
