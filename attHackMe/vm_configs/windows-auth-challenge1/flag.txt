@@ -1,0 +1,1 @@
+FLAG{correct_password_access_granted}
