@@ -9,7 +9,7 @@ from flask import send_from_directory
 profile_bp = Blueprint('profile', __name__)
 
 
-@profile_bp.route("/profileview", methods=["GET", "OPTIONS"])
+@profile_bp.route("/", methods=["GET", "OPTIONS"])
 @jwt_required(optional=True)
 def get_profile():
     if request.method == "OPTIONS":

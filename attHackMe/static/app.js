@@ -210,6 +210,45 @@ document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("page-settings")) {
     loadProfileData();
   }
+
+  // 👤 Chargement des infos du profil (profile.html uniquement)
+  if (window.location.pathname === "/profile.html") {
+    const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    fetch("/profileview", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(user => {
+        console.log("✅ Données profil chargées :", user);
+
+        document.getElementById("usernameDisplay").textContent = user.username;
+
+        if (user.email) {
+          document.getElementById("userEmail").textContent = user.email;
+        }
+
+        if (user.avatar) {
+          document.getElementById("current-avatar").src = `/static/images/avatars/${user.avatar}`;
+        }
+
+        if (user.banner) {
+          document.getElementById("current-banner").src = `/static/images/banners/${user.banner}`;
+        }
+
+        document.getElementById("userBadge")?.classList.remove("hidden");
+      })
+      .catch(err => {
+        console.error("❌ Erreur de chargement profil :", err);
+      });
+  }
+
 });
 
 
