@@ -182,6 +182,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Sélection de soldat
+    const soldierList = [
+    "soldat1.png",
+    "soldat2.png",
+    "soldat3.png"
+  ];
+
+  let currentIndex = parseInt(localStorage.getItem("selectedSoldierIndex")) || 0;
+
+  const soldierImage = document.getElementById("soldierImage");
+  const nextBtn = document.getElementById("nextSoldierBtn");
+
+  if (soldierImage) {
+    soldierImage.src = `/static/images/soldiers/${soldierList[currentIndex]}`;
+  }
+
+  if (nextBtn && soldierImage) {
+    nextBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % soldierList.length;
+      localStorage.setItem("selectedSoldierIndex", currentIndex);
+      soldierImage.src = `/static/images/soldiers/${soldierList[currentIndex]}`;
+    });
+  }
+
+
   // 🎨 Effet de fondu des challenges
   function updateFadeEffect() {
     if (!challengeList || !scrollWrapper) return;

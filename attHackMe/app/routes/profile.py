@@ -55,7 +55,8 @@ def get_profile():
         "progress": progress,
         "email_public": user.email_public,
         "rank": user.rank,
-        "points": user.points
+        "points": user.points,
+        "soldier_skin": user.soldier_skin
     })
 
 

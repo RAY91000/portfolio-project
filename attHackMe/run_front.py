@@ -3,10 +3,13 @@ from flask_cors import CORS
 from app.models.challenge import Challenge
 from uuid import UUID
 from flask_jwt_extended import verify_jwt_in_request
+from flask_migrate import Migrate
+from app.extensions import db
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5001"}})
 
+migrate = Migrate(app, db)
 
 @app.route('/')
 def home():

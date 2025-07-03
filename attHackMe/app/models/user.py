@@ -16,6 +16,8 @@ class User(UserMixin, BaseModel):
     avatar_url = db.Column(db.String(255), default="")
     banner_url = db.Column(db.String(255), default="")
     email_public = db.Column(db.Boolean, default=False)
+    soldier_skin = db.Column(db.String(100), default="soldat1.png")
+
 
 
     def set_password(self, password):
