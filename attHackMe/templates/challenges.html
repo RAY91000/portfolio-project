@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        body { font-family: 'Share Tech Mono', monospace; }
+    </style>
+
+    <meta charset="UTF-8">
+    <title>Challenges - AttHackMe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0f0f1b] font-mono text-white min-h-screen overflow-hidden px-4 py-4">
+
+    <!-- Header with Username + Logout -->
+    <div class="flex justify-between items-center mb-4 px-0 py-0">
+        <div id="userBadge" class="bg-green-700 text-white px-4 py-2 rounded-lg shadow text-sm font-mono hidden">
+            👤 <span id="usernameDisplay"></span>
+        </div>
+        <button id="logoutBtn" class="hidden bg-red-600 px-3 py-1 rounded text-white text-sm hover:bg-red-700">
+            🔓 Logout
+        </button>
+    </div>
+
+    <!-- Scrollable challenge list -->
+    <h1 class="text-purple-400 text-3xl font-bold mb-12 text-center">Challenges</h1>
+
+    <div class="flex justify-center items-center h-[calc(100vh-100px)]">
+        <div id="scrollWrapper" class="scroll-list__wrp w-full max-w-2xl h-[700px] overflow-y-auto">
+            <ul id="challengeList" class="space-y-8 px-4">
+                <!-- JS remplira ici -->
+            </ul>
+        </div>
+    </div>
+
+    <div class="text-center mt-8">
+        <a href="/" class="text-indigo-500 hover:underline">← Back</a>
+    </div>
+
+    <!-- Script d'intégration -->
+    <script src="/static/app.js"></script>
+    <script>
+      // Bouton ouverture VM Kali pour chaque challenge
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+
+        function createStartKaliBtn() {
+            const btn = document.createElement("button");
+            btn.className = "bg-gray-700 text-white px-3 py-2 rounded hover:bg-gray-800";
+            btn.innerText = "🧪 Ouvrir VM Kali";
+            btn.onclick = async () => {
+                if (!token) {
+                    alert("Veuillez vous connecter pour lancer Kali.");
+                window.location.href = "/login";
+                return;
+            }
+
+            const res = await fetch("/challenges/kali/start", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const data = await res.json();
+            if (data.guacamole_url) {
+                window.open(data.guacamole_url, "_blank");
+            } else {
+                    alert("❌ " + (data.error || "Erreur lors du lancement de Kali"));
+                }
+            };
+            return btn;
+        }
+
+        // Attendre que les challenges soient rendus
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll("#challengeList > li").forEach(li => {
+                if (!li.querySelector(".vm-kali-btn")) {
+                    const kaliBtn = createStartKaliBtn();
+                    kaliBtn.classList.add("vm-kali-btn", "mt-2");
+                    li.querySelector(".flex.flex-col")?.appendChild(kaliBtn);
+                }
+            });
+        });
+
+            observer.observe(document.getElementById("challengeList"), { childList: true });
+        });
+    </script>
+</body>
+</html>
