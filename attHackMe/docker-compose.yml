@@ -70,6 +70,18 @@ services:
       att_net:
         ipv4_address: 172.20.0.11
 
+  win-smb-misconfig:
+    build:
+      context: ./vm_configs/windows-smb-misconfig
+    container_name: win-smb-misconfig
+    restart: always
+    ports:
+      - "1445:445"
+    networks:
+      att_net:
+        ipv4_address: 172.20.0.12
+
+
 networks:
   att_net:
     driver: bridge
