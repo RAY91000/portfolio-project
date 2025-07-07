@@ -6,7 +6,9 @@ from flask_jwt_extended import verify_jwt_in_request
 from app.extensions import db
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
-CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5001"}})
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5001"}}, supports_credentials=True)
+
+
 
 
 @app.route('/')
@@ -42,6 +44,18 @@ def profile():
 def profile_settings():
     return render_template("settings.html")
 
+@app.route('/start.html/<uuid:id>')
+def start_challenge(id):
+    return render_template('start.html')
+
+
+@app.after_request
+def add_cors_headers(response):
+            response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:5001"
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+            return response
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)

@@ -131,7 +131,14 @@ if (challengeList) {
 
           const result = await response.json();
           alert(result.message || "Challenge started successfully!");
+
+          if (response.ok) {
+            window.open(`/start.html/${challenge.id}`, "_blank");
+          } else {
+            alert(result.message || "An error occurred.");
+          }
         });
+
 
         // 🔓 Lancer VM Kali
         const kaliBtn = li.querySelector(".kali-btn");

@@ -5,7 +5,7 @@ from app.models.progress import Progress
 
 progress_bp = Blueprint("progress", __name__, url_prefix="/progress")
 
-@progress_bp.route('/<uuid:challenge_id>/status', methods=['POST'])
+@progress_bp.route('/challenge/<uuid:challenge_id>/status', methods=['POST'])
 @jwt_required()
 def update_status(challenge_id):
     user_id = get_jwt_identity()

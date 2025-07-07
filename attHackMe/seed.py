@@ -45,10 +45,10 @@ with app.app_context():
 
     challenge2 = Challenge(
         docker_image='att/crypto101:latest',
-        title='Crypto 101',
-        description='Decrypt a simple message using a provided key.',
+        title='test challenge',
+        description='This test is made to check the review system.',
         difficulty='Medium',
-        category='Cryptography',
+        category='test',
         flag='crypto123'
     )
     challenge3 = Challenge(
