@@ -26,6 +26,9 @@ def create_app(config_name='default'):
     jwt.init_app(app)
     csrf.init_app(app)
 
+    from app.routes.kali import kali_bp
+    app.register_blueprint(kali_bp)
+
     from app.models.user import User
 
     @login_manager.user_loader
