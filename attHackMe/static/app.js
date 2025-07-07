@@ -78,66 +78,88 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 🧠 Affichage des challenges
-  if (challengeList) {
-    const difficultyIcons = {
-      Easy: "🟢 Noob",
-      Medium: "🟡 Medium",
-      Hard: "🔴 Ranker"
-    };
+  // 🧠 Affichage des challenges
+if (challengeList) {
+  const difficultyIcons = {
+    Easy: "🟢 Noob",
+    Medium: "🟡 Medium",
+    Hard: "🔴 Ranker"
+  };
 
-    fetch("http://127.0.0.1:5000/challenges/")
-      .then(res => res.json())
-      .then(data => {
-        data.forEach(challenge => {
-          const li = document.createElement("li");
-          li.className = "bg-white/10 text-white border border-green-400 rounded-lg p-6 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-green-500";
-          li.innerHTML = `
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="text-2xl font-bold text-green-400 mb-1">${challenge.title}</h3>
-                <p class="text-sm text-gray-300 mb-2">${challenge.description}</p>
-                <p class="text-sm text-yellow-300">
-                  🧐 Category: ${challenge.category || "Unknown"}<br>
-                  💀 Difficulty: ${difficultyIcons[challenge.difficulty] || challenge.difficulty || "Unknown"}
-                </p>
-              </div>
-              <div class="flex flex-col gap-2 text-sm">
-                <a href="/challenge/${challenge.id}" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-center">🔍 View</a>
-                <button class="start-btn bg-pink-600 text-white px-3 py-2 rounded hover:bg-pink-700" data-id="${challenge.id}">🌹 Start</button>
-              </div>
+  fetch("http://127.0.0.1:5000/challenges/")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(challenge => {
+        const li = document.createElement("li");
+        li.className = "bg-white/10 text-white border border-green-400 rounded-lg p-6 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-green-500";
+        li.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-2xl font-bold text-green-400 mb-1">${challenge.title}</h3>
+              <p class="text-sm text-gray-300 mb-2">${challenge.description}</p>
+              <p class="text-sm text-yellow-300">
+                🧐 Category: ${challenge.category || "Unknown"}<br>
+                💀 Difficulty: ${difficultyIcons[challenge.difficulty] || challenge.difficulty || "Unknown"}
+              </p>
             </div>
-          `;
+            <div class="flex flex-col gap-2 text-sm">
+              <a href="/challenge/${challenge.id}" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-center">🔍 View</a>
+              <button class="start-btn bg-pink-600 text-white px-3 py-2 rounded hover:bg-pink-700" data-id="${challenge.id}">🌹 Start</button>
+              ${token ? `<button class="kali-btn bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700" data-id="${challenge.id}">🔓 VM Kali</button>` : ""}
+            </div>
+          </div>
+        `;
 
-          challengeList.appendChild(li);
+        challengeList.appendChild(li);
 
-          const startBtn = li.querySelector(".start-btn");
-          startBtn?.addEventListener("click", async () => {
-            if (!token) {
-              alert("Please log in to start the challenge.");
-              window.location.href = "/login";
-              return;
+        // 🎯 Start challenge
+        const startBtn = li.querySelector(".start-btn");
+        startBtn?.addEventListener("click", async () => {
+          if (!token) {
+            alert("Please log in to start the challenge.");
+            window.location.href = "/login";
+            return;
+          }
+
+          const response = await fetch(`http://127.0.0.1:5000/challenges/${challenge.id}/start`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
             }
-
-            const response = await fetch(`http://127.0.0.1:5000/challenges/${challenge.id}/start`, {
-              method: "POST",
-              headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-              }
-            });
-
-            const result = await response.json();
-            alert(result.message || "Challenge started successfully!");
           });
+
+          const result = await response.json();
+          alert(result.message || "Challenge started successfully!");
         });
 
-        updateFadeEffect();
-      })
-      .catch(error => {
-        challengeList.innerHTML = `<li class="text-red-500">❌ Failed to load challenges: ${error.message}</li>`;
-        console.error(error);
+        // 🔓 Lancer VM Kali
+        const kaliBtn = li.querySelector(".kali-btn");
+        kaliBtn?.addEventListener("click", async () => {
+          const response = await fetch("http://127.0.0.1:5000/start", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+
+          const data = await response.json();
+          if (data.guacamole_url) {
+            window.open(data.guacamole_url, "_blank");
+          } else {
+            alert("Erreur de lancement de la VM Kali.");
+          }
+        });
       });
-  }
+
+      updateFadeEffect();
+    })
+    .catch(error => {
+      challengeList.innerHTML = `<li class="text-red-500">❌ Failed to load challenges: ${error.message}</li>`;
+      console.error(error);
+    });
+}
+
 
   // 📄 Détail d’un challenge
   if (challengeDetails) {
