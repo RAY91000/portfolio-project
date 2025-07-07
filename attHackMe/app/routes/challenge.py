@@ -1,7 +1,9 @@
-from flask import Blueprint, jsonify, request, render_template, redirect, url_for
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import Blueprint, jsonify
 from app.models.challenge import Challenge
-import docker
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.models.submission import Submission
+from datetime import datetime
+from app.extensions import db
 
 challenge_bp = Blueprint('challenges', __name__)
 
@@ -12,65 +14,46 @@ def get_challenges():
         "id": c.id,
         "title": c.title,
         "description": c.description,
-        "difficulty": c.difficulty
+        "difficulty": c.difficulty,
+        "category": c.category,
+        "flag": c.flag,
+        "docker_image": c.docker_image,
+        "instructions": c.instructions
     } for c in challenges])
 
-@challenge_bp.route('/start/<challenge_id>', methods=['POST'])
+@challenge_bp.route('/<uuid:id>', methods=['GET'])
+def get_challenge(id):
+    challenge = Challenge.query.get_or_404(str(id))
+    return jsonify({
+        "id": str(challenge.id),
+        "title": challenge.title,
+        "description": challenge.description,
+        "instructions": challenge.instructions,
+        "difficulty": challenge.difficulty,
+        "category": challenge.category,
+        "flag": challenge.flag,
+        "docker_image": challenge.docker_image,
+    })
+
+@challenge_bp.route('/<uuid:id>/start', methods=['POST'])
 @jwt_required()
-def start_challenge(challenge_id):
-    challenge = Challenge.query.get(challenge_id)
-    if not challenge:
-        return jsonify({"error": "Challenge not found"}), 404
-
-    container_name = challenge.docker_image
-    if not container_name:
-        return jsonify({"error": "No Docker image specified for this challenge"}), 400
-
-    try:
-        client = docker.from_env()
-        container = client.containers.get(container_name)
-
-        if container.status != "running":
-            container.start()
-
-        ip = container.attrs["NetworkSettings"]["Networks"]["att_net"]["IPAddress"]
-
-        return jsonify({
-            "title": challenge.title,
-            "description": challenge.description,
-            "ip": ip,
-            "status": container.status
-        }), 200
-
-    except docker.errors.NotFound:
-        return jsonify({"error": f"Container '{container_name}' not found"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@challenge_bp.route('/page', methods=['GET'])
-def challenge_page():
-    return render_template('challenges.html')
-
-@challenge_bp.route('/kali/start', methods=['POST'])
-@jwt_required()
-def start_kali():
-    try:
-        client = docker.from_env()
-        container = client.containers.get("kali")
-
-        if container.status != "running":
-            container.start()
-
-        return jsonify({
-            "message": "Kali démarrée",
-            "guacamole_url": "http://localhost:8080/guacamole/"
-        }), 200
-
-    except docker.errors.NotFound:
-        return jsonify({"error": "Conteneur 'kali' introuvable"}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@challenge_bp.route('/')
-def index():
-    return redirect(url_for('challenges.challenge_page'))
+def start_challenge(id):
+    user_id = get_jwt_identity()
+    
+    # Check if the user has already started this challenge
+    existing_submission = Submission.query.filter_by(user_id=user_id, challenge_id=str(id)).first()
+    if existing_submission:
+        return jsonify({"message": "Challenge already started"}), 201
+    
+    # Create a new submission
+    submission = Submission(
+        user_id=user_id,
+        challenge_id=str(id),
+        status='in_progress',
+        created_at =datetime.utcnow()
+    )
+    
+    db.session.add(submission)
+    db.session.commit()
+    
+    return jsonify({"message": "Challenge started successfully", "submission_id": submission.id}), 201

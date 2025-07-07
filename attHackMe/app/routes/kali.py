@@ -13,7 +13,6 @@ def start_kali_vm():
     # URL d'accès direct à Guacamole avec les bons paramètres
     guac_url = (
         "http://127.0.0.1:8080/guacamole/#/client/"
-        "username=guacadmin&password=guacadmin"
     )
 
     return jsonify({

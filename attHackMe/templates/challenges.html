@@ -28,62 +28,18 @@
 
     <div class="flex justify-center items-center h-[calc(100vh-100px)]">
         <div id="scrollWrapper" class="scroll-list__wrp w-full max-w-2xl h-[700px] overflow-y-auto">
-            <ul id="challengeList" class="space-y-8 px-4">
-                <!-- JS remplira ici -->
-            </ul>
+                <ul id="challengeList" class="space-y-8 px-4">
+                <!-- JS will fill this list -->
+                </ul>
         </div>
-    </div>
+
 
     <div class="text-center mt-8">
         <a href="/" class="text-indigo-500 hover:underline">← Back</a>
     </div>
 
-    <!-- Script d'intégration -->
     <script src="/static/app.js"></script>
-    <script>
-      // Bouton ouverture VM Kali pour chaque challenge
-        document.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("access_token") || localStorage.getItem("token");
-
-        function createStartKaliBtn() {
-            const btn = document.createElement("button");
-            btn.className = "bg-gray-700 text-white px-3 py-2 rounded hover:bg-gray-800";
-            btn.innerText = "🧪 Ouvrir VM Kali";
-            btn.onclick = async () => {
-                if (!token) {
-                    alert("Veuillez vous connecter pour lancer Kali.");
-                window.location.href = "/login";
-                return;
-            }
-
-            const res = await fetch("/challenges/kali/start", {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            const data = await res.json();
-            if (data.guacamole_url) {
-                window.open(data.guacamole_url, "_blank");
-            } else {
-                    alert("❌ " + (data.error || "Erreur lors du lancement de Kali"));
-                }
-            };
-            return btn;
-        }
-
-        // Attendre que les challenges soient rendus
-        const observer = new MutationObserver(() => {
-            document.querySelectorAll("#challengeList > li").forEach(li => {
-                if (!li.querySelector(".vm-kali-btn")) {
-                    const kaliBtn = createStartKaliBtn();
-                    kaliBtn.classList.add("vm-kali-btn", "mt-2");
-                    li.querySelector(".flex.flex-col")?.appendChild(kaliBtn);
-                }
-            });
-        });
-
-            observer.observe(document.getElementById("challengeList"), { childList: true });
-        });
-    </script>
 </body>
 </html>
+<!-- This is the challenges page of the AttHackMe application. It displays a list of available challenges, each with a title, description, and difficulty level. Users can click on a challenge to view its details and start it. The page uses Tailwind CSS for styling and is designed to be simple and user-friendly. -->
+<!-- The challenges are dynamically generated using JavaScript, which fetches the challenge data from the server. The page also includes a user badge that displays the logged-in user's name and a logout button. -->

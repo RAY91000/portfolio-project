@@ -18,7 +18,7 @@
     <img src="static/images/background.png" alt="Home Background" class="absolute top-0 left-0 w-full h-full object-cover z-0" />
 
     <!-- Bouton Soldat (déplaçable) --> 
-    <a href="profile.html"
+    <a href="/profile"
        class="absolute z-20 glow-soldier"
        style="top: -1px; left: -7px; width: 548px; height: 721px;">
       <img src="static/images/soldier.png" alt="Soldier" class="w-full h-full object-contain pointer-events-auto" />
@@ -39,10 +39,7 @@
       <a href="/register" class="dogtag-button"> Register</a>
       <a href="/login" class="dogtag-button"> Login</a>
     </div>
-    <!-- Bouton visibles quand connecté -->
-    <button id="logoutBtn" class="chrome-dogtag mt-4 px-4 py-2">
-      🔓 Logout
-    </button>
+    <button id="logoutBtn" class="dogtag-button hidden fixed top-4 right-4 z-50"> Logout</button>
   </div>
 
   <!-- BUILDER DRAG+RESIZE   put draggable instead of absolute

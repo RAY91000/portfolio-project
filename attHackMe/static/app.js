@@ -18,10 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const userBadge = document.getElementById("userBadge");
   const authButtons = document.getElementById("authButtons");
 
+  // 👋 Affiche Register/Login uniquement si l’utilisateur n’est PAS connecté
   if (authButtons && !token) {
     authButtons.classList.remove("hidden");
   }
 
+    
+  // 🎮 Page d'accueil : zoom et son
   if (pathname === "/" || pathname === "/home.html") {
     if (board && scene) {
       board.addEventListener("click", (e) => {
@@ -37,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // 📝 Formulaire d'inscription
   if (registerForm) {
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -52,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 🔐 Formulaire de connexion
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -64,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
-        localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("username", data.username);
         window.location.href = "/";
       } else {
@@ -73,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 🧠 Affichage des challenges
   if (challengeList) {
     const difficultyIcons = {
       Easy: "🟢 Noob",
@@ -108,12 +113,12 @@ document.addEventListener("DOMContentLoaded", () => {
           const startBtn = li.querySelector(".start-btn");
           startBtn?.addEventListener("click", async () => {
             if (!token) {
-              alert("Veuillez vous connecter pour lancer un challenge.");
+              alert("Please log in to start the challenge.");
               window.location.href = "/login";
               return;
             }
 
-            const res = await fetch(`http://127.0.0.1:5000/challenges/${challenge.id}/start`, {
+            const response = await fetch(`http://127.0.0.1:5000/challenges/${challenge.id}/start`, {
               method: "POST",
               headers: {
                 "Authorization": `Bearer ${token}`,
@@ -121,24 +126,20 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             });
 
-            const result = await res.json();
-
-            if (res.ok && result.guacamole_url) {
-              window.open(result.guacamole_url, "_blank");
-            } else {
-              alert(result.message || "❌ Erreur lors du lancement du challenge.");
-            }
+            const result = await response.json();
+            alert(result.message || "Challenge started successfully!");
           });
         });
 
         updateFadeEffect();
       })
       .catch(error => {
-        challengeList.innerHTML = `<li class="text-red-500">❌ Erreur de chargement : ${error.message}</li>`;
+        challengeList.innerHTML = `<li class="text-red-500">❌ Failed to load challenges: ${error.message}</li>`;
         console.error(error);
       });
   }
 
+  // 📄 Détail d’un challenge
   if (challengeDetails) {
     const id = pathname.split("/").pop();
     fetch(`http://127.0.0.1:5000/challenges/${id}`)
@@ -155,11 +156,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
+  // 🔚 Déconnexion
   if (logoutBtn) {
+    const token = localStorage.getItem("token") || localStorageStorage.getItem("access_token");
     if (!token) {
-      logoutBtn.classList.add("hidden");
+      logoutBtn.classList.add("hidden"); // Masquer le bouton si non connecté
     } else {
-      logoutBtn.classList.remove("hidden");
+      logoutBtn.classList.remove("hidden"); // Afficher le bouton si connecté
       logoutBtn.addEventListener("click", () => {
         localStorage.removeItem("token");
         localStorage.removeItem("access_token");
@@ -169,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // 👤 Affichage de l’utilisateur connecté
   if (usernameDisplay && userBadge) {
     if (username) {
       usernameDisplay.textContent = ` ${username}`;
@@ -178,6 +182,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Sélection de soldat
+    const soldierList = [
+    "soldat1.png",
+    "soldat2.png",
+    "soldat3.png"
+  ];
+
+  let currentIndex = parseInt(localStorage.getItem("selectedSoldierIndex")) || 0;
+
+  const soldierImage = document.getElementById("soldierImage");
+  const nextBtn = document.getElementById("nextSoldierBtn");
+
+  if (soldierImage) {
+    soldierImage.src = `/static/images/soldiers/${soldierList[currentIndex]}`;
+  }
+
+  if (nextBtn && soldierImage) {
+    nextBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % soldierList.length;
+      localStorage.setItem("selectedSoldierIndex", currentIndex);
+      soldierImage.src = `/static/images/soldiers/${soldierList[currentIndex]}`;
+    });
+  }
+
+
+  // 🎨 Effet de fondu des challenges
   function updateFadeEffect() {
     if (!challengeList || !scrollWrapper) return;
     const wrapperRect = scrollWrapper.getBoundingClientRect();
@@ -200,4 +230,166 @@ document.addEventListener("DOMContentLoaded", () => {
     const observer = new MutationObserver(updateFadeEffect);
     observer.observe(challengeList, { childList: true });
   }
+
+  // 🛠️ Paramètres utilisateur (settings.html)
+  if (document.getElementById("page-settings")) {
+    loadProfileData();
+  }
+
+  // 👤 Chargement des infos du profil (profile.html uniquement)
+  if (window.location.pathname === "/profile.html") {
+    const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    fetch("/profileview", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(user => {
+        console.log("✅ Données profil chargées :", user);
+
+        document.getElementById("usernameDisplay").textContent = user.username;
+
+        if (user.email) {
+          document.getElementById("userEmail").textContent = user.email;
+        }
+
+        if (user.avatar) {
+          document.getElementById("current-avatar").src = `/static/images/avatars/${user.avatar}`;
+        }
+
+        if (user.banner) {
+          document.getElementById("current-banner").src = `/static/images/banners/${user.banner}`;
+        }
+
+        document.getElementById("userBadge")?.classList.remove("hidden");
+      })
+      .catch(err => {
+        console.error("❌ Erreur de chargement profil :", err);
+      });
+  }
+
 });
+
+
+function loadProfileData() {
+  console.log("✅ Fonction loadProfileData appelée");
+
+  const avatarList = ["avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png"];
+  const bannerList = ["banner1.jpg", "banner2.jpg", "banner3.jpg", "banner4.jpg"];
+
+  const baseAvatarPath = "/static/images/avatars/";
+  const baseBannerPath = "/static/images/banners/";
+
+  let selectedAvatar = null;
+  let selectedBanner = null;
+
+  const avatarContainer = document.getElementById("avatar-list");
+  const bannerContainer = document.getElementById("banner-list");
+
+  const currentAvatar = document.getElementById("current-avatar");
+  const currentBanner = document.getElementById("current-banner");
+  const emailPublicCheckbox = document.getElementById("email_public");
+  const messageBox = document.getElementById("settings-message");
+
+  function populateSelection(container, list, type, selectedValue) {
+    console.log(`🧩 populateSelection pour ${type}, valeur sélectionnée: ${selectedValue}`);
+    container.innerHTML = "";
+
+    list.forEach(imgName => {
+      const img = document.createElement("img");
+      img.src = (type === "avatar" ? baseAvatarPath : baseBannerPath) + imgName;
+      img.classList.add(type === "avatar" ? "avatar-option" : "banner-option");
+      img.width = type === "avatar" ? 80 : 160;
+      img.height = type === "avatar" ? 80 : 90;
+
+      if (imgName === selectedValue) img.classList.add("selected");
+
+      img.onclick = () => {
+        document.querySelectorAll("." + (type === "avatar" ? "avatar-option" : "banner-option"))
+          .forEach(el => el.classList.remove("selected"));
+        img.classList.add("selected");
+
+        if (type === "avatar") {
+          selectedAvatar = imgName;
+          currentAvatar.src = baseAvatarPath + imgName;
+          avatarContainer.classList.add("hidden");
+        } else {
+          selectedBanner = imgName;
+          currentBanner.src = baseBannerPath + imgName;
+          bannerContainer.classList.add("hidden");
+        }
+      };
+
+      container.appendChild(img);
+    });
+  }
+
+  currentAvatar?.addEventListener("click", () => {
+    console.log("clic sur avatar");
+    avatarContainer?.classList.toggle("hidden");
+  });
+
+  currentBanner?.addEventListener("click", () => {
+    bannerContainer?.classList.toggle("hidden");
+  });
+
+  const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+  if (!token) return;
+
+  fetch("/profileview", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => res.json())
+    .then(user => {
+      console.log("donnée user :", user);
+      selectedAvatar = user.avatar || avatarList[0];
+      selectedBanner = user.banner || bannerList[0];
+
+      currentAvatar.src = baseAvatarPath + selectedAvatar;
+      currentBanner.src = baseBannerPath + selectedBanner;
+
+      emailPublicCheckbox.checked = user.show_email || false;
+
+      populateSelection(avatarContainer, avatarList, "avatar", selectedAvatar);
+      populateSelection(bannerContainer, bannerList, "banner", selectedBanner);
+    })
+    .catch(err => console.error("Erreur lors du chargement du profil:", err));
+
+  const settingsForm = document.getElementById("settings-form");
+  settingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email_public = emailPublicCheckbox.checked;
+
+    const res = await fetch("/settings", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        avatar: selectedAvatar,
+        banner: selectedBanner,
+        email_public
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      messageBox.textContent = "✅ Paramètres mis à jour.";
+      messageBox.className = "text-green-400 text-sm mt-2 text-center";
+    } else {
+      messageBox.textContent = data.error || "❌ Erreur inconnue.";
+      messageBox.className = "text-red-400 text-sm mt-2 text-center";
+    }
+  });
+}
