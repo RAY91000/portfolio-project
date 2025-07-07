@@ -12,9 +12,9 @@ def update_status(challenge_id):
     data = request.get_json()
     status = data.get("status", "started")
 
-    prog = Progress.query.filter_by(user_id=user_id, challenge_id=challenge_id).first()
+    prog = Progress.query.filter_by(user_id=str(user_id), challenge_id=str(challenge_id)).first()
     if not prog:
-        prog = Progress(user_id=user_id, challenge_id=challenge_id, status=status)
+        prog = Progress(user_id=str(user_id), challenge_id=str(challenge_id), status=status)
         db.session.add(prog)
     else:
         prog.status = status
