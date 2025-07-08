@@ -48,6 +48,11 @@ def profile_settings():
 def start_challenge(id):
     return render_template('start.html')
 
+@app.route('/verify_email')
+def verify_email():
+    return render_template('verify_email.html')
+
+
 
 @app.after_request
 def add_cors_headers(response):

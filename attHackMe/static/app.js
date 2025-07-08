@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const scene = document.getElementById("scene");
   const sound = document.getElementById("click-sound");
   const registerForm = document.getElementById("registerForm");
-  const loginForm = document.getElementById("loginForm");
   const challengeList = document.getElementById("challengeList");
   const challengeDetails = document.getElementById("challengeDetails");
   const scrollWrapper = document.getElementById("scrollWrapper");
@@ -40,44 +39,81 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 📝 Formulaire d'inscription
-  if (registerForm) {
-    registerForm.addEventListener("submit", async (e) => {
+  // 📝 Formulaire d'inscription avec vérification UX du mot de passe
+  const registerFormEl = document.getElementById("registerForm");
+
+  if (registerFormEl) {
+    registerFormEl.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const formData = new FormData(registerForm);
+
+      const formData = new FormData(e.target);
+      const password = formData.get("password");
+
+      // 🔐 Vérifie la complexité du mot de passe
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+      if (!passwordPattern.test(password)) {
+        alert(
+          "Le mot de passe doit contenir au moins 8 caractères, avec une majuscule, une minuscule, un chiffre et un caractère spécial."
+        );
+        return;
+      }
+
+      // ✅ Mot de passe valide, envoie la requête
       const response = await fetch("http://127.0.0.1:5000/register", {
         method: "POST",
         body: formData,
-        cache: "no-store"
       });
-      const data = await response.json();
-      document.getElementById("registerMsg").innerText = response.ok ? "" : data.message || data.error;
-      if (response.ok) window.location.href = "/login";
-    });
-  }
 
-  // 🔐 Formulaire de connexion
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(loginForm);
-      const response = await fetch("http://127.0.0.1:5000/login", {
-        method: "POST",
-        body: formData,
-        cache: "no-store"
-      });
-      const data = await response.json();
-      if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("username", data.username);
-        window.location.href = "/";
+      const result = await response.json();
+
+      if (response.ok) {
+        alert(result.message);
+        window.location.href = "/verify_email";
       } else {
-        document.getElementById("loginMsg").innerText = data.message || data.error;
+        alert(result.error || "Erreur lors de l'inscription.");
       }
     });
   }
 
-  // 🧠 Affichage des challenges
+
+
+
+  // 🔐 Formulaire de connexion
+    const loginForm = document.getElementById("loginForm");
+    console.log("Form trouvé ?", loginForm);
+
+    if (loginForm) {
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+
+        try {
+          const response = await fetch("http://127.0.0.1:5000/login", {
+            method: "POST",
+            body: formData,
+            cache: "no-store"
+          });
+
+          const data = await response.json();
+          console.log("Login response:", data);
+
+          if (data.access_token) {
+            localStorage.setItem("token", data.access_token);
+            localStorage.setItem("username", data.username);
+            window.location.href = "/";
+          } else {
+            document.getElementById("loginMsg").innerText = data.message || data.error;
+          }
+        } catch (err) {
+          console.error("Erreur lors de la requête :", err);
+          document.getElementById("loginMsg").innerText = "Erreur réseau lors de la connexion.";
+        }
+      });
+    }
+
+
+
   // 🧠 Affichage des challenges
 if (challengeList) {
   const difficultyIcons = {

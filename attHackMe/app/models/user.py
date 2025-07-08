@@ -17,6 +17,8 @@ class User(UserMixin, BaseModel):
     banner_url = db.Column(db.String(255), default="")
     email_public = db.Column(db.Boolean, default=False)
     soldier_skin = db.Column(db.String(100), default="soldat1.png")
+    is_verified = db.Column(db.Boolean, default=False)
+    
 
 
 

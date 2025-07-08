@@ -10,6 +10,9 @@ from app.routes.progress import progress_bp
 from app.routes.leaderboard import leaderboard_bp
 from config import config as config_dict
 from flask_jwt_extended import JWTManager
+from dotenv import load_dotenv
+load_dotenv()
+
 
 def create_app(config_name='default'):
     app = Flask(__name__)
