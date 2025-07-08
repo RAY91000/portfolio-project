@@ -341,53 +341,68 @@ if (challengeList) {
 
 });
 
+document.addEventListener("DOMContentLoaded", loadProfileData);
 
 function loadProfileData() {
   console.log("✅ Fonction loadProfileData appelée");
 
   const avatarList = ["avatar1.png", "avatar2.png", "avatar3.png", "avatar4.png"];
   const bannerList = ["banner1.jpg", "banner2.jpg", "banner3.jpg", "banner4.jpg"];
+  const soldierList = ["soldat1.png", "soldat2.png", "soldat3.png", "soldat4.png"];
 
   const baseAvatarPath = "/static/images/avatars/";
   const baseBannerPath = "/static/images/banners/";
+  const baseSoldierPath = "/static/images/soldiers/";
 
   let selectedAvatar = null;
   let selectedBanner = null;
+  let selectedSoldier = null;
 
   const avatarContainer = document.getElementById("avatar-list");
   const bannerContainer = document.getElementById("banner-list");
+  const soldierContainer = document.getElementById("soldier-list");
 
   const currentAvatar = document.getElementById("current-avatar");
   const currentBanner = document.getElementById("current-banner");
-  const emailPublicCheckbox = document.getElementById("email_public");
+  const currentSoldier = document.getElementById("soldierImage");
+  const emailPublicCheckbox = document.getElementById("emailPublic");
   const messageBox = document.getElementById("settings-message");
 
   function populateSelection(container, list, type, selectedValue) {
     console.log(`🧩 populateSelection pour ${type}, valeur sélectionnée: ${selectedValue}`);
+    if (!container) return;
     container.innerHTML = "";
 
     list.forEach(imgName => {
       const img = document.createElement("img");
-      img.src = (type === "avatar" ? baseAvatarPath : baseBannerPath) + imgName;
-      img.classList.add(type === "avatar" ? "avatar-option" : "banner-option");
-      img.width = type === "avatar" ? 80 : 160;
-      img.height = type === "avatar" ? 80 : 90;
+      const basePath = type === "avatar" ? baseAvatarPath :
+                       type === "banner" ? baseBannerPath :
+                       baseSoldierPath;
+
+      img.src = basePath + imgName;
+      img.classList.add(`${type}-option`);
+      img.width = 80;
+      img.height = 80;
 
       if (imgName === selectedValue) img.classList.add("selected");
 
       img.onclick = () => {
-        document.querySelectorAll("." + (type === "avatar" ? "avatar-option" : "banner-option"))
+        document.querySelectorAll(`.${type}-option`)
           .forEach(el => el.classList.remove("selected"));
         img.classList.add("selected");
 
         if (type === "avatar") {
           selectedAvatar = imgName;
           currentAvatar.src = baseAvatarPath + imgName;
-          avatarContainer.classList.add("hidden");
-        } else {
+          avatarContainer?.classList.add("hidden");
+        } else if (type === "banner") {
           selectedBanner = imgName;
           currentBanner.src = baseBannerPath + imgName;
-          bannerContainer.classList.add("hidden");
+          bannerContainer?.classList.add("hidden");
+        } else if (type === "soldier") {
+          selectedSoldier = imgName;
+          currentSoldier.src = baseSoldierPath + imgName;
+          soldierContainer?.classList.add("hidden");
         }
       };
 
@@ -396,7 +411,6 @@ function loadProfileData() {
   }
 
   currentAvatar?.addEventListener("click", () => {
-    console.log("clic sur avatar");
     avatarContainer?.classList.toggle("hidden");
   });
 
@@ -404,57 +418,83 @@ function loadProfileData() {
     bannerContainer?.classList.toggle("hidden");
   });
 
+  currentSoldier?.addEventListener("click", () => {
+    soldierContainer?.classList.toggle("hidden");
+  });
+
   const token = localStorage.getItem("access_token") || localStorage.getItem("token");
   if (!token) return;
 
-  fetch("/profileview", {
+  fetch("http://127.0.0.1:5000/api/profile/", {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
     .then(res => res.json())
     .then(user => {
-      console.log("donnée user :", user);
+      console.log("📦 Donnée user :", user);
+
+      // Texte
+      document.getElementById("usernameDisplay").textContent = user.username;
+      document.getElementById("userEmail").textContent = user.email || "privé";
+      document.getElementById("userLevel").textContent = user.level;
+      document.getElementById("userRank").textContent = user.rank;
+      document.getElementById("userPoints").textContent = user.points;
+
+      // Images
       selectedAvatar = user.avatar || avatarList[0];
       selectedBanner = user.banner || bannerList[0];
+      selectedSoldier = user.soldier_skin || soldierList[0];
 
       currentAvatar.src = baseAvatarPath + selectedAvatar;
       currentBanner.src = baseBannerPath + selectedBanner;
+      currentSoldier.src = baseSoldierPath + selectedSoldier;
 
-      emailPublicCheckbox.checked = user.show_email || false;
+      // Email checkbox
+      if (emailPublicCheckbox) {
+        emailPublicCheckbox.checked = user.email_public || false;
+      }
 
+      // Sélections
       populateSelection(avatarContainer, avatarList, "avatar", selectedAvatar);
       populateSelection(bannerContainer, bannerList, "banner", selectedBanner);
+      populateSelection(soldierContainer, soldierList, "soldier", selectedSoldier);
     })
-    .catch(err => console.error("Erreur lors du chargement du profil:", err));
+    .catch(err => console.error("❌ Erreur lors du chargement du profil:", err));
 
   const settingsForm = document.getElementById("settings-form");
-  settingsForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  if (settingsForm) {
+    console.log("📋 Form trouvé !");
+    settingsForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const email_public = emailPublicCheckbox.checked;
+      const email_public = emailPublicCheckbox?.checked || false;
 
-    const res = await fetch("/settings", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        avatar: selectedAvatar,
-        banner: selectedBanner,
-        email_public
-      })
+      const res = await fetch("/settings", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          avatar: selectedAvatar,
+          banner: selectedBanner,
+          email_public,
+          soldier_skin: selectedSoldier
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        messageBox.textContent = "✅ Paramètres mis à jour.";
+        messageBox.className = "text-green-400 text-sm mt-2 text-center";
+      } else {
+        messageBox.textContent = data.error || "❌ Erreur inconnue.";
+        messageBox.className = "text-red-400 text-sm mt-2 text-center";
+      }
     });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      messageBox.textContent = "✅ Paramètres mis à jour.";
-      messageBox.className = "text-green-400 text-sm mt-2 text-center";
-    } else {
-      messageBox.textContent = data.error || "❌ Erreur inconnue.";
-      messageBox.className = "text-red-400 text-sm mt-2 text-center";
-    }
-  });
+  } else {
+    console.log("⚠️ Aucun formulaire #settings-form trouvé (pas grave si lecture seule).");
+  }
 }

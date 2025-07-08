@@ -13,8 +13,10 @@ class User(UserMixin, BaseModel):
     is_admin = db.Column(db.Boolean, default=False)
     progress = relationship("Progress", back_populates="user", cascade="all, delete-orphan")
     points = db.Column(db.Integer, default=0)
-    avatar_url = db.Column(db.String(255), default="")
-    banner_url = db.Column(db.String(255), default="")
+    avatar = db.Column(db.String(255), default="")
+    banner = db.Column(db.String(255), default="")
+    rank = db.Column(db.String(64), default="Novice")
+
     email_public = db.Column(db.Boolean, default=False)
     soldier_skin = db.Column(db.String(100), default="soldat1.png")
     is_verified = db.Column(db.Boolean, default=False)

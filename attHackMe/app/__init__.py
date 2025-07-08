@@ -42,9 +42,11 @@ def create_app(config_name='default'):
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(challenge_bp, url_prefix="/challenges")
     app.register_blueprint(review_bp, url_prefix="/reviews")
-    app.register_blueprint(profile_bp, url_prefix="/profile")
+    app.register_blueprint(profile_bp, url_prefix="/api/profile")
     app.register_blueprint(progress_bp, url_prefix="/progress")
     app.register_blueprint(leaderboard_bp, url_prefix="/leaderboard")
+    
+
 
 
     
