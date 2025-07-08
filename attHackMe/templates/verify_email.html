@@ -1,0 +1,42 @@
+<!-- templates/verify_email.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Vérification Email</title>
+</head>
+<body>
+  <h2>Vérifiez votre email</h2>
+  <form id="verify-form">
+    <input type="email" id="email" placeholder="Votre email" required><br>
+    <input type="text" id="otp" placeholder="Code OTP" required><br>
+    <button type="submit">Vérifier</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+    document.getElementById("verify-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const otp = document.getElementById("otp").value;
+
+      const res = await fetch("http://127.0.0.1:5000/verify_email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp })
+      });
+
+      const data = await res.json();
+      const message = document.getElementById("message");
+      message.textContent = data.message || data.error;
+
+      if (res.ok) {
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
+      }
+    });
+  </script>
+</body>
+</html>

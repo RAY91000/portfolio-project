@@ -13,6 +13,9 @@
   </style>
 </head>
 <body class="h-screen overflow-hidden flex items-center justify-center bg-[#0a0a1a] text-white">
+    <a href="/" class="fixed top-4 right-56 dogtag-button">
+     Home
+    </a>
 
     <!-- Actions -->
     <header class="absolute top-4 right-6 z-50">
@@ -21,10 +24,10 @@
   <!-- Titre -->
     <div class="relative flex items-center gap-2">
     <img id="soldierImage" src="/static/images/soldiers/soldat1.png"
-        alt="soldier" class="w-1/3 max-w-[300px] transition-all duration-300" />
+        alt="soldier" class="max-w-none w-[350px] transition-all duration-300" />
 
-    <button id="nextSoldierBtn" class="text-white bg-purple-600 hover:bg-purple-700 px-2 py-1 rounded-full shadow">
-        ➡️
+    <button id="nextSoldierBtn" class="text-white w-[50px] bg-purple-600 hover:bg-purple-700 px-2 py-1 rounded-full shadow">
+        🏴‍☠️
     </button>
     </div>
 
@@ -51,22 +54,18 @@
         </div>
 
       <ul class="text-sm space-y-2">
-        <li>✏️ <strong>Niveau</strong> : <span id="userLevel">1</span></li>
-        <li>🏆 <strong>Rang</strong> : <span id="userRank">Cadet</span></li>
-        <li>🎯 <strong>Points</strong> : <span id="userPoints">0</span></li>
+        <li>✏️ <strong>Niveau</strong> : <span id="userLevel"></span></li>
+        <li>🏆 <strong>Rang</strong> : <span id="userRank"></span></li>
+        <li>🎯 <strong>Points</strong> : <span id="userPoints"></span></li>
       </ul>
 
       <p class="mt-4 text-sm text-gray-400">
-        🪪 <strong>Email</strong> : <span id="userEmail">user@example.com</span>
+        🪪 <strong>Email</strong> : <span id="userEmail"></span>
         <input type="checkbox" id="emailPublic" class="ml-2">
         <label for="emailPublic">Public</label>
       </p>
     </div>
   </div>
-
-  <footer class="absolute bottom-6 w-full flex justify-center z-50">
-    <a href="/" class="text-blue-400 hover:underline text-sm"> Home</a>
-  </footer>
 
   <script src="/static/app.js"></script>
 </body>

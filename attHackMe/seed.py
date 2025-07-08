@@ -45,11 +45,11 @@ with app.app_context():
 
     challenge2 = Challenge(
         docker_image='att/crypto101:latest',
-        title='Crypto 101',
-        description='Decrypt a simple message using a provided key.',
-        difficulty='Medium',
-        category='Cryptography',
-        flag='crypto123'
+        title='Windows SMB misconfig',
+        description='IPv4: 172.20.0.12',
+        difficulty='Easy',
+        category='Port infiltration',
+        flag='FLAG{smb_misconfig_exposure}'
     )
     challenge3 = Challenge(
         docker_image='att/web101:latest',

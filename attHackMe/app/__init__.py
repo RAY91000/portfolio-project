@@ -5,19 +5,23 @@ from app.routes.auth import auth_bp
 from app.routes.user import user_bp
 from app.routes.challenge import challenge_bp
 from app.routes.review import review_bp
-from app.routes.submission import submission_bp
 from app.routes.profile import profile_bp
 from app.routes.progress import progress_bp
 from app.routes.leaderboard import leaderboard_bp
 from config import config as config_dict
 from flask_jwt_extended import JWTManager
+from dotenv import load_dotenv
+load_dotenv()
+
 
 def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config_dict[config_name])
     app.config['WTF_CSRF_ENABLED'] = False  # désactive CSRF pour les tests
-    app.config['JWT_SECRET_KEY'] = 'super-secret-key'  # ⚠️ change ça en prod
-    CORS(app)
+    app.config['JWT_SECRET_KEY'] = 'super-secret-key'
+    CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5001"}}, supports_credentials=True)
+
+
     JWTManager(app)
 
     db.init_app(app)
@@ -29,19 +33,21 @@ def create_app(config_name='default'):
     from app.routes.kali import kali_bp
     app.register_blueprint(kali_bp)
 
-    from app.models.user import User
+    
+    
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(user_id)
+
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(challenge_bp, url_prefix="/challenges")
     app.register_blueprint(review_bp, url_prefix="/reviews")
-    app.register_blueprint(submission_bp, url_prefix="/submissions")
-    app.register_blueprint(profile_bp, url_prefix="/profile")
+    app.register_blueprint(profile_bp, url_prefix="/api/profile")
     app.register_blueprint(progress_bp, url_prefix="/progress")
     app.register_blueprint(leaderboard_bp, url_prefix="/leaderboard")
+    
 
+
+
+    
     return app

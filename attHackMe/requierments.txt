@@ -6,4 +6,7 @@ Flask-JWT-Extended
 Flask-Cors
 Flask-SQLAlchemy
 Flask-Migrate
+Flask-mail
+python-dotenv
+sendgrid
 docker
