@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     
   // 🎮 Page d'accueil : zoom et son
-  if (pathname === "/" || pathname === "/home.html") {
+  if (pathname === "/home" || pathname === "/home.html") {
     if (board && scene) {
       board.addEventListener("click", (e) => {
         e.preventDefault();

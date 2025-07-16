@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AttHackMe - Enlist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    html {
+        scroll-behavior: smooth;
+        overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      color: white;
+      background-color: black;
+      overflow-x: hidden;
+      background-image: url('{{ url_for("static", filename="images/space1.png") }}');
+      background-size: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      transition: background-size 0.2s ease-out;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overflow-y: scroll;
+      height: 100vh;
+    }
+
+    section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.05);
+      max-width: 800px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #f7ffb6;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: #79ffe1;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    a.dogtag-button {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 12px 24px;
+      background: linear-gradient(145deg, #d4d4d4, #f0f0f0, #a0a0a0);
+      color: #444;
+      border: 2px solid #888;
+      border-radius: 12px;
+      text-transform: uppercase;
+      font-weight: bold;
+      text-decoration: none;
+      letter-spacing: 1px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease;
+    }
+
+    a.dogtag-button:hover {
+      transform: scale(1.05);
+      color: #1f1f1f;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 1. Presentation -->
+  <section>
+    <div class="overlay">
+      <h2>PRESENTATION</h2>
+      <p>
+        AttHackMe is a gamified platform for beginners in cybersecurity.<br>
+        We created it to make ethical hacking fun and immersive.<br>
+        Join us, crack alien files, and rise through the ranks.
+      </p>
+    </div>
+  </section>
+
+  <!-- 2. Who We Are -->
+  <section>
+    <div class="overlay">
+        <h2>WHO WE ARE</h2>
+        <div style="display: flex; gap: 40px; justify-content: center; align-items: center; margin: 2rem 0;">
+        <div>
+            <img src="{{ url_for('static', filename='images/avatars/avatar.png') }}" alt="Ray Dotrop" style="width: 150px; border-radius: 50%; box-shadow: 0 0 10px #79ffe1;">
+            <p style="margin-top: 10px;">Ray Dotrop</p>
+        </div>
+        <div>
+            <img src="{{ url_for('static', filename='images/avatars/avatar.png') }}" alt="Raphael Dott" style="width: 150px; border-radius: 50%; box-shadow: 0 0 10px #79ffe1;">
+            <p style="margin-top: 10px;">Raphael Dott</p>
+        </div>
+        </div>
+        <p>Contact: <a href="mailto:ray.dotropg@gmail.com">ray.dotropg@gmail.com</a> | <a href="mailto:9815@holbertonstudent.com">9815@holbertonstudent.com</a></p>
+    </div>
+  </section>
+
+  <!-- 3. Attack Has Begun -->
+  <section>
+    <div class="overlay">
+      <h1>ATTACK HAS BEGUN</h1>
+      <p>The alien threat is real. Only your brain can crack their encrypted systems.</p>
+      <a href="/home" class="dogtag-button">ENLIST NOW</a>
+    </div>
+  </section>
+
+  <footer style="text-align:center; padding: 2rem; background:#111; color: #888;">
+    &copy; 2025 AttHackMe. All rights reserved.
+  </footer>
+
+  <script>
+    // Zoom the background based on scroll position
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const zoom = 100 + scrollTop * 0.05;
+      document.body.style.backgroundSize = `${zoom}%`;
+    });
+  </script>
+
+</body>
+</html>

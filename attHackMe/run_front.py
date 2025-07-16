@@ -12,6 +12,10 @@ CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5001"}}, supports_cred
 
 
 @app.route('/')
+def landing():
+    return render_template('landing.html')
+    
+@app.route('/home')
 def home():
     return render_template('home.html')
 
