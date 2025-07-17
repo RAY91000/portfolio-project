@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const username = localStorage.getItem("username");
 
   const board = document.getElementById("board-button");
+  const soldier = document.getElementById("soldier-button");
   const scene = document.getElementById("scene");
   const sound = document.getElementById("click-sound");
   const registerForm = document.getElementById("registerForm");
@@ -17,13 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const userBadge = document.getElementById("userBadge");
   const authButtons = document.getElementById("authButtons");
 
-  // 👋 Affiche Register/Login uniquement si l’utilisateur n’est PAS connecté
+  // Affiche Register/Login uniquement si l’utilisateur n’est PAS connecté
   if (authButtons && !token) {
     authButtons.classList.remove("hidden");
   }
 
     
-  // 🎮 Page d'accueil : zoom et son
+  // Page d'accueil : zoom et son
   if (pathname === "/home" || pathname === "/home.html") {
     if (board && scene) {
       board.addEventListener("click", (e) => {
@@ -37,9 +38,21 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => window.location.href = board.href, 1000);
       });
     }
+    if (soldier && scene) {
+      soldier.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (sound) {
+          sound.volume = 1.0;
+          sound.currentTime = 0;
+          sound.play().catch(err => console.warn("Audio play error:", err));
+        }
+        scene.classList.add("zoom-out");
+        setTimeout(() => window.location.href = soldier.href, 1000);
+      });
+    }
   }
 
-  // 📝 Formulaire d'inscription avec vérification UX du mot de passe
+  // Formulaire d'inscription avec vérification UX du mot de passe
   const registerFormEl = document.getElementById("registerForm");
 
   if (registerFormEl) {
@@ -49,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const formData = new FormData(e.target);
       const password = formData.get("password");
 
-      // 🔐 Vérifie la complexité du mot de passe
+      // Vérifie la complexité du mot de passe
       const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
       if (!passwordPattern.test(password)) {
@@ -59,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // ✅ Mot de passe valide, envoie la requête
+      // Mot de passe valide, envoie la requête
       const response = await fetch("http://127.0.0.1:5000/register", {
         method: "POST",
         body: formData,
@@ -79,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-  // 🔐 Formulaire de connexion
+  // Formulaire de connexion
     const loginForm = document.getElementById("loginForm");
     console.log("Form trouvé ?", loginForm);
 
@@ -114,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-  // 🧠 Affichage des challenges
+  // Affichage des challenges
 if (challengeList) {
   const difficultyIcons = {
     Easy: "🟢 Noob",
@@ -237,7 +250,7 @@ if (challengeList) {
     }
   }
 
-  // 👤 Affichage de l’utilisateur connecté
+  //  Affichage de l’utilisateur connecté
   if (usernameDisplay && userBadge) {
     if (username) {
       usernameDisplay.textContent = ` ${username}`;
@@ -272,7 +285,7 @@ if (challengeList) {
   }
 
 
-  // 🎨 Effet de fondu des challenges
+  //  Effet de fondu des challenges
   function updateFadeEffect() {
     if (!challengeList || !scrollWrapper) return;
     const wrapperRect = scrollWrapper.getBoundingClientRect();
@@ -296,12 +309,12 @@ if (challengeList) {
     observer.observe(challengeList, { childList: true });
   }
 
-  // 🛠️ Paramètres utilisateur (settings.html)
+  //  Paramètres utilisateur (settings.html)
   if (document.getElementById("page-settings")) {
     loadProfileData();
   }
 
-  // 👤 Chargement des infos du profil (profile.html uniquement)
+  //  Chargement des infos du profil (profile.html uniquement)
   if (window.location.pathname === "/profile.html") {
     const token = localStorage.getItem("access_token") || localStorage.getItem("token");
     if (!token) {

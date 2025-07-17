@@ -9,7 +9,13 @@
   <style>
     html {
         scroll-behavior: smooth;
-        overflow: hidden;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar {
+      display: none;
     }
 
     body {
@@ -27,8 +33,7 @@
       transition: background-size 0.2s ease-out;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      overflow-y: scroll;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     section {
@@ -101,7 +106,7 @@
       <h2>PRESENTATION</h2>
       <p>
         AttHackMe is a gamified platform for beginners in cybersecurity.<br>
-        We created it to make ethical hacking fun and immersive.<br>
+        We created it to make ethical hacking accessible for young people, fun and immersive.<br>
         Join us, crack alien files, and rise through the ranks.
       </p>
     </div>
